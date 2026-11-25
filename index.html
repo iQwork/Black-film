@@ -348,7 +348,7 @@
     .helper-note { margin-top: 10px; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--gold-bg); border: 1px solid rgba(180, 138, 62, 0.28); font-size: 0.9rem; color: var(--text-primary); }
     .helper-note-title { font-weight: 800; color: var(--gold); margin-bottom: 4px; font-size: 0.82rem; }
 
-    /* Visual Memory Section */
+    /* Visual Memory Studio */
     .visual-section { margin-top: 24px; padding: 22px; border-radius: var(--radius-md); background: var(--bg-canvas); border: 1px solid var(--border-hairline); }
     .visual-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
     .visual-title { font-size: 1.15rem; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 8px; }
@@ -356,6 +356,9 @@
     .visual-stage { background: #FFFFFF; border: 1px solid var(--border-hairline); border-radius: var(--radius-md); overflow: hidden; position: relative; min-height: 320px; display: flex; flex-direction: column; }
     .visual-stage.paper-canvas { background-color: #FCFBF7; background-image: radial-gradient(rgba(11, 31, 58, 0.06) 1px, transparent 1px); background-size: 18px 18px; color: #0F172A; }
     html.dark .visual-stage.dark-capable { background-color: #0B1628; background-image: radial-gradient(rgba(226, 232, 240, 0.06) 1px, transparent 1px); color: var(--text-primary); }
+    .sim-viewport { width: 100%; min-height: 300px; position: relative; display: flex; align-items: center; justify-content: center; padding: 14px; direction: ltr; unicode-bidi: isolate; }
+    .sim-viewport svg { max-width: 100%; height: auto; display: block; direction: ltr; }
+    .sim-viewport canvas { max-width: 100%; height: auto; display: block; direction: ltr; border-radius: 10px; }
     .sim-controls-dock { direction: rtl; color: var(--text-primary); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 12px 14px; background: var(--bg-subtle); border-top: 1px solid var(--border-hairline); }
     .sim-controls-dock label { color: var(--text-primary); display: inline-flex; align-items: center; gap: 8px; }
     .sim-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 7px; border: 1px solid var(--border-hairline); background: var(--bg-surface); color: var(--text-primary); font-size: 0.8rem; font-weight: 700; transition: all 0.15s ease; }
@@ -364,10 +367,24 @@
     html.dark .sim-btn.active { background: var(--turquoise); color: #05201D; }
     .sim-inspector { margin-top: 12px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--bg-surface); border: 1px solid var(--border-hairline); font-size: 0.9rem; }
     .sim-inspector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-top: 8px; }
-    .sim-part-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-    .sim-part-chip { padding: 6px 11px; border-radius: 6px; border: 1px solid var(--border-hairline); background: var(--bg-subtle); font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); transition: all 0.15s ease; }
+    .sim-part-chips { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .sim-part-chip {
+      display: flex; align-items: center; gap: 10px; width: 100%; text-align: right;
+      padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-hairline);
+      background: var(--bg-subtle); font-size: 0.84rem; font-weight: 700;
+      color: var(--text-primary); transition: all 0.15s ease;
+    }
+    .sim-part-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--navy); color: #FFFFFF; font-family: var(--font-mono);
+      font-size: 0.76rem; font-weight: 800; transition: all 0.15s ease;
+    }
+    .sim-part-ar { font-weight: 800; color: inherit; }
+    .sim-part-en { margin-right: auto; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
     .sim-part-chip:hover, .sim-part-chip.selected { border-color: var(--turquoise); background: var(--turquoise-bg); color: var(--turquoise); }
-
+    .sim-part-chip:hover .sim-part-num, .sim-part-chip.selected .sim-part-num { background: var(--turquoise); color: #FFFFFF; }
+    .sim-part-chip.selected .sim-part-en { color: var(--turquoise); }
     /* HD Anatomical Capture + Clinical Motion Video Studio */
     .sim-3d-viewport {
       width: 100%; aspect-ratio: 16 / 9; min-height: 270px; max-height: 540px;
@@ -379,8 +396,7 @@
     .sim-3d-viewport.zoomed:active { cursor: grabbing; }
     @media (max-width: 640px) {
       .sim-3d-viewport { min-height: 230px; }
-      .sim-3d-pin { font-size: 0.60rem; padding: 2px 6px; gap: 4px; }
-      .sim-3d-pin-idx { width: 13px; height: 13px; font-size: 0.56rem; }
+      .sim-3d-pin { width: 24px; height: 24px; font-size: 0.68rem; border-width: 1.8px; }
       .sim-3d-hud-rtl, .sim-3d-hud-ltr { font-size: 0.64rem; padding: 4px 8px; }
     }
     .sim-3d-host { width: 100%; height: 100%; position: relative; z-index: 1; overflow: hidden; }
@@ -401,23 +417,16 @@
     .sim-3d-pin {
       position: absolute; top: 0; left: 0; will-change: transform;
       pointer-events: auto; cursor: pointer; opacity: 1;
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 8px; border-radius: 6px; font-family: var(--font-ar); font-size: 0.66rem; font-weight: 800;
-      color: #F8FAFC; background: rgba(7, 15, 29, 0.90); border: 1px solid rgba(56, 189, 248, 0.68);
-      white-space: nowrap; direction: rtl; backdrop-filter: blur(6px);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.48); transition: border-color 0.14s ease, background-color 0.14s ease, box-shadow 0.14s ease, opacity 0.2s ease;
-    }
-    .sim-3d-pin-idx {
+      width: 28px; height: 28px; padding: 0; border-radius: 50%;
       display: inline-flex; align-items: center; justify-content: center;
-      width: 15px; height: 15px; border-radius: 4px;
-      background: rgba(56, 189, 248, 0.22); color: #7DD3FC; font-family: var(--font-mono); font-size: 0.61rem; font-weight: 800;
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 800; line-height: 1;
+      color: #FFFFFF; background: rgba(11, 31, 58, 0.92); border: 2px solid #38BDF8;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 0 2px rgba(4, 10, 22, 0.45);
+      transition: border-color 0.14s ease, background-color 0.14s ease, box-shadow 0.14s ease, opacity 0.2s ease;
     }
     .sim-3d-pin:hover, .sim-3d-pin.active {
-      background: #0D9488; border-color: #FDE68A; color: #FFFFFF; z-index: 5;
-      box-shadow: 0 0 0 2px rgba(253, 230, 138, 0.45), 0 6px 14px rgba(0,0,0,0.52);
-    }
-    .sim-3d-pin.active .sim-3d-pin-idx, .sim-3d-pin:hover .sim-3d-pin-idx {
-      background: rgba(253, 230, 138, 0.28); color: #FEF08A;
+      background: #0D9488; border-color: #FDE68A; color: #FFFFFF; z-index: 6;
+      box-shadow: 0 0 0 4px rgba(253, 230, 138, 0.48), 0 4px 14px rgba(0,0,0,0.60);
     }
     .sim-3d-hud-rtl {
       position: absolute; top: 10px; right: 12px; z-index: 6; pointer-events: none;
@@ -474,6 +483,8 @@
     .sim-iq-card-lbl { font-size: 0.76rem; font-weight: 800; color: var(--turquoise); margin-bottom: 4px; }
     .sim-iq-card-lbl.gold { color: var(--gold); }
     .sim-iq-card-txt { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); line-height: 1.72; }
+    .doodle-stroke { stroke-dasharray: 1200; stroke-dashoffset: 1200; transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease; }
+    .doodle-drawn .doodle-stroke { stroke-dashoffset: 0; }
 
     /* Topic Divider & 2 Lightbox Gates */
     .topic-divider { margin: 26px 0 18px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), var(--turquoise), transparent); opacity: 0.55; }
@@ -629,7 +640,7 @@
       </button>
 
       <div style="margin-top:auto; padding-top:14px; border-top:1px solid var(--border-hairline); display:flex; flex-direction:column; gap:10px;">
-        <a href="https://t.me/yaserzia/27" target="_blank" rel="noopener noreferrer" class="telegram-showcase" style="width:100%; justify-content:center;">
+        <a href="https://t.me/yaserzia/29" target="_blank" rel="noopener noreferrer" class="telegram-showcase" style="width:100%; justify-content:center;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.97 9.281c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.832.941z"/></svg>
           <span>رابط الملزمة</span>
         </a>
@@ -661,7 +672,7 @@
 
           <div class="hero-cta-row">
             <button id="resumeStudyBtn" class="btn-primary">ابدأ من الصفحة 1</button>
-            <a href="https://t.me/yaserzia/27" target="_blank" rel="noopener noreferrer" class="telegram-showcase">
+            <a href="https://t.me/yaserzia/29" target="_blank" rel="noopener noreferrer" class="telegram-showcase">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.97 9.281c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.832.941z"/></svg>
               <span>رابط الملزمة</span>
             </a>
@@ -3069,31 +3080,31 @@
         try { activeCleanups.pop()(); } catch(e){}
       }
     }
-
     function esc(s){
       return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
-
     function buildInspectorHtml(parts, defaultKey){
       var chips = parts.map(function(p, idx){
         var sel = (p.key === defaultKey || (!defaultKey && idx === 0)) ? " selected" : "";
-        return '<button type="button" class="sim-part-chip'+sel+'" data-part-key="'+esc(p.key)+'">'+esc(p.en)+' · '+esc(p.ar)+'</button>';
+        return '<button type="button" class="sim-part-chip'+sel+'" data-part-key="'+esc(p.key)+'">' +
+          '<span class="sim-part-num">'+(idx+1)+'</span>' +
+          '<span class="sim-part-ar">'+esc(p.ar)+'</span>' +
+          '<span class="sim-part-en ltr">'+esc(p.en)+'</span>' +
+        '</button>';
       }).join("");
       var first = parts.find(function(p){ return p.key === defaultKey; }) || parts[0];
       return '<div class="sim-inspector">' +
-        '<div style="font-weight:800; color:var(--navy); font-size:0.88rem;">اضغط على أي تسمية فوق اللقطة التشريحية أو من القائمة للتعرف على الجزء والشرح العراقي:</div>' +
+        '<div style="font-weight:800; color:var(--navy); font-size:0.88rem;">اضغط على أي نقطة مرقمة فوق الصورة أو اختر رقمها من القائمة المرتبة بالأسفل لعرض اسمها وشرحها:</div>' +
         '<div class="sim-part-chips">' + chips + '</div>' +
         '<div class="sim-inspector-grid" data-inspector-card>' + renderInspectorCard(first) + '</div>' +
       '</div>';
     }
-
     function renderInspectorCard(p){
       if(!p) return "";
       return '<div><div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">المصطلح والترجمة</div><div class="ltr" style="font-weight:800; color:var(--navy);">'+esc(p.en)+'</div><div style="font-weight:700; color:var(--turquoise);">'+esc(p.ar)+'</div></div>' +
         '<div><div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">الشرح التوضيحي بالعراقي</div><div>'+esc(p.iq)+'</div></div>' +
         '<div><div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">الأهمية بالعيادة والامتحان</div><div>'+esc(p.clinical)+'</div></div>';
     }
-
     function buildGuideHtml(sc){
       if(!sc) return "";
       return '<div class="sim-iq-guide-head">' +
@@ -3106,10 +3117,9 @@
         '<div class="sim-iq-card"><div class="sim-iq-card-lbl gold">3. زبدة الامتحان والعيادة:</div><div class="sim-iq-card-txt">'+esc(sc.tipIq)+'</div></div>' +
       '</div>';
     }
-
     function drawFocusHalo(ctx, x, y, r, color, t){
       ctx.save();
-      var pulse = 1 + 0.14 * Math.sin(t * 4.0);
+      var pulse = 1 + 0.16 * Math.sin(t * 4.2);
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.4;
       ctx.setLineDash([7, 5]);
@@ -3127,7 +3137,6 @@
       ctx.fill();
       ctx.restore();
     }
-
     function drawMotionArrow(ctx, x1, y1, x2, y2, color, lw){
       ctx.save();
       var dx = x2 - x1, dy = y2 - y1;
@@ -3141,20 +3150,22 @@
       var tipBackY = y2 - Math.sin(ang) * notch;
       var lx = x2 - wing * Math.cos(ang - 0.46), ly = y2 - wing * Math.sin(ang - 0.46);
       var rx = x2 - wing * Math.cos(ang + 0.46), ry = y2 - wing * Math.sin(ang + 0.46);
-
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "rgba(4, 10, 22, 0.58)";
       ctx.fillStyle = "rgba(4, 10, 22, 0.58)";
       ctx.lineWidth = w + 2.2;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tipBackX, tipBackY); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(tipBackX, tipBackY);
+      ctx.stroke();
       ctx.beginPath();
       ctx.moveTo(x2 + Math.cos(ang) * 1.0, y2 + Math.sin(ang) * 1.0);
       ctx.lineTo(lx - Math.cos(ang - 0.46) * 1.1, ly - Math.sin(ang - 0.46) * 1.1);
       ctx.lineTo(tipBackX - Math.cos(ang) * 0.9, tipBackY - Math.sin(ang) * 0.9);
       ctx.lineTo(rx - Math.cos(ang + 0.46) * 1.1, ry - Math.sin(ang + 0.46) * 1.1);
-      ctx.closePath(); ctx.fill();
-
+      ctx.closePath();
+      ctx.fill();
       ctx.shadowColor = color;
       ctx.shadowBlur = 5;
       var grad = ctx.createLinearGradient(x1, y1, x2, y2);
@@ -3163,20 +3174,28 @@
       grad.addColorStop(1, color);
       ctx.strokeStyle = grad;
       ctx.lineWidth = w;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tipBackX, tipBackY); ctx.stroke();
-
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(tipBackX, tipBackY);
+      ctx.stroke();
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.moveTo(x2, y2); ctx.lineTo(lx, ly); ctx.lineTo(tipBackX, tipBackY); ctx.lineTo(rx, ry);
-      ctx.closePath(); ctx.fill();
-
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(lx, ly);
+      ctx.lineTo(tipBackX, tipBackY);
+      ctx.lineTo(rx, ry);
+      ctx.closePath();
+      ctx.fill();
       ctx.shadowBlur = 0;
       ctx.strokeStyle = "rgba(255, 255, 255, 0.48)";
       ctx.lineWidth = 0.85;
-      ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x2, y2); ctx.lineTo(rx, ry); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(lx, ly);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(rx, ry);
+      ctx.stroke();
       ctx.restore();
     }
-
     function drawFlowTrack(ctx, x1, y1, x2, y2, color, lw, t, bidir){
       drawMotionArrow(ctx, x1, y1, x2, y2, color, lw || 2.2);
       ctx.save();
@@ -3193,7 +3212,6 @@
       ctx.fill();
       ctx.restore();
     }
-
     function drawSprayStream(ctx, sx, sy, ex, ey, color, count, t, size){
       ctx.save();
       for(var i = 0; i < count; i++){
@@ -3209,7 +3227,6 @@
       }
       ctx.restore();
     }
-
     function drawShockRings(ctx, cx, cy, maxR, color, count, t){
       ctx.save();
       for(var i = 0; i < count; i++){
@@ -3223,605 +3240,1388 @@
       }
       ctx.restore();
     }
-
     function drawOrbitPath(ctx, cx, cy, rx, ry, color, t, speed, linear){
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.4;
       ctx.globalAlpha = 0.78;
       if(linear){
-        ctx.beginPath(); ctx.moveTo(cx - rx, cy); ctx.lineTo(cx + rx, cy); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - rx, cy);
+        ctx.lineTo(cx + rx, cy);
+        ctx.stroke();
         var lx = cx + Math.sin(t * speed) * rx;
-        ctx.fillStyle = "#FEF08A"; ctx.globalAlpha = 0.96;
-        ctx.beginPath(); ctx.arc(lx, cy, 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#FEF08A";
+        ctx.globalAlpha = 0.96;
+        ctx.beginPath();
+        ctx.arc(lx, cy, 4.5, 0, Math.PI * 2);
+        ctx.fill();
       } else {
         ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
         ctx.setLineDash([]);
         var ox = cx + Math.cos(t * speed) * rx;
         var oy = cy + Math.sin(t * speed) * ry;
-        ctx.fillStyle = "#FEF08A"; ctx.globalAlpha = 0.96;
-        ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#FEF08A";
+        ctx.globalAlpha = 0.96;
+        ctx.beginPath();
+        ctx.arc(ox, oy, 4.5, 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.restore();
     }
 
     Object.assign(window.__SIM_3D_SPECS, {
-      "p1-microbiota-plaque": {
-        imgSrc: "src/assets/images/biofilm_plaque_colonization_1795585002076.jpg",
-        duration: 8,
-        scenarios: [
+      "p1-microbiota-plaque":       {
+        "imgSrc": "src/assets/images/p1t1_f1_plaque_band_1795610763840.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. تطور الميكروبيوتا (معقم بالرحم ← أسبوعين ← 10^14 خلية)",
-            activePart: "gut",
-            focus: { cx: 28, cy: 52, scale: 1.38 },
-            seeIq: "باوع عالجانب الأيسر: الجنين داخل الرحم معقم 100% ومن ينولد يبدأ استيطان الفم بسرعة وخلال أسبوعين تنضج بكتيريا الأمعاء وبعد الفطام توصل مية تريليون خلية ووزنها 2 كيلو أكثر من الدماغ",
-            whyIq: "سلايدات 3 و 4 تعلمنا إن جسمنا بيئة طبيعية لـ 10 أضعاف خلايانا من البكتيريا وإن الفم يُستعمر من لحظة الولادة تقريباً",
-            tipIq: "Sterile fetus -> 2 weeks gut -> After weaning 10^14 (2 kg bacteria vs 1.4 kg brain)"
+            "label": "1. تراكم البلاك اللاصق حول طوق التقويم واللثة",
+            "activePart": "plaque_matrix",
+            "focus": {
+              "cx": 50,
+              "cy": 58,
+              "scale": 1.16
+            },
+            "seeIq": "باوع حوالين طوق التقويم المعدني بالضرس: تجمع أبيض مصفر لزج هو البلاك السني اللاصق بشدة على المينا والمعدن ويم حافة اللثة",
+            "whyIq": "سلايد 5 يعرف البلاك كتجمعات حيوية تلتصق بقوة بالأسنان والتيجان والأطقم وأطواق التقويم وميكروبيوتا الجسم توصل 10^14 خلية بعد الفطام",
+            "tipIq": "10^14 microbiota (2 kg vs 1.4 kg brain) · Plaque adheres firmly to teeth & orthodontic bands"
           },
           {
-            label: "2. التصاق البلاك بالسن والتقويم (لا يزول بالمضمضة فقط بالميكانيكي)",
-            activePart: "plaque",
-            focus: { cx: 74, cy: 52, scale: 1.38 },
-            seeIq: "شوف اليمين: الماي بالمضمضة يرتد برة بدون ما يشيل البلاك اللاصق عالسن وطوق التقويم بينما احتكاك الفرشة الميكانيكي يشيله وينفصله",
-            whyIq: "سلايد 5 يعرف البلاك كتجمعات لاصقة بقوة عالأسنان والتيجان والأطقم وأطواق التقويم ما تروح بالمضمضة وتحتاج تنظيف ميكانيكي",
-            tipIq: "Slide 5: Adheres firmly · Detached by mechanical cleansing · Cannot be removed by rinsing"
+            "label": "2. فشل المضمضة وتيار الماء بإزالة البلاك اللاصق",
+            "activePart": "ortho_band",
+            "focus": {
+              "cx": 54,
+              "cy": 62,
+              "scale": 1.22
+            },
+            "seeIq": "شوف رذاذ الماي شلون يرتد عن الطوق المعدني بينما طبقة البلاك الجوة تظل لاصقة بمكانها وما تتحرك بالمضمضة وحدها",
+            "whyIq": "لأن الماتركس اللزج يحمي المستعمرات البكتيرية وما تنفصل البكتيريا اللاصقة إلا بالاحتكاك والتنظيف الميكانيكي المباشر",
+            "tipIq": "Slide 5 Rule: Cannot be removed by rinsing · Only detached by mechanical cleansing"
           }
         ],
-        parts: [
-          { key: "fetus", en: "Sterile Fetus & Oral Birth Colonization", ar: "الجنين المعقم واستيطان الفم بالولادة", posPct: [14, 18], iq: "داخل الرحم يكون معقم تماماً واستيطان تجويف الفم يبدأ قريب وقت الولادة", clinical: "Slides 3–4" },
-          { key: "gut", en: "10^14 Microbiota (2 kg vs 1.4 kg Brain)", ar: "ميكروبيوتا 10^14 ووزن 2 كيلو", posPct: [34, 80], iq: "تنضج بالأمعاء خلال أسبوعين وبعد الفطام تصل مية تريليون وتزن 2 كغم", clinical: "10x more bacteria than human cells" },
-          { key: "plaque", en: "Firm Biofilm on Tooth & Ortho Band", ar: "التصاق البلاك ومقاومته للمضمضة", posPct: [80, 44], iq: "يلزك بقوة عالأسنان والتيجان والتقويم وما يوكع بالماي وإنما بالتنظيف الميكانيكي فقط", clinical: "Slide 5 Dental Plaque Definition" }
-        ],
+        "parts": [
+          {
+            "key": "plaque_matrix",
+            "en": "Adherent Dental Plaque Biofilm",
+            "ar": "الغشاء الحيوي للبلاك اللاصق",
+            "posPct": [
+              47,
+              74
+            ],
+            "iq": "تجمعات بكتيرية لزجة تلتصق بقوة بالأسنان ولا تزول بالمضمضة أو الغسل السطحي",
+            "clinical": "Slide 5: Detached only by mechanical cleansing"
+          },
+          {
+            "key": "ortho_band",
+            "en": "Orthodontic Band & Appliance Retention",
+            "ar": "طوق التقويم ومصيدة التراكم",
+            "posPct": [
+              50,
+              52
+            ],
+            "iq": "الأسطح المعدنية والتركيبات توفر مأوى إضافياً لتجمع البلاك كما يذكر تعريف البلاك بالسلايد 5",
+            "clinical": "Sterile fetus -> oral birth colonization -> 10^14 post-weaning"
+          },
+          {
+            "key": "margin_junction",
+            "en": "Dentogingival Biofilm Collar",
+            "ar": "طوق البلاك عند حافة اللثة",
+            "posPct": [
+              65,
+              67
+            ],
+            "iq": "التماس المباشر بين البلاك وحافة اللثة هو نقطة انطلاق الالتهاب الموضعي",
+            "clinical": "Slides 3–5 Biofilm Basics"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.17, h * 0.22, w * 0.36, h * 0.36, "#38BDF8", 2.1, t, false);
-            drawFocusHalo(ctx, w * 0.34, h * 0.78, 28, "#34D399", t);
-          } else {
-            drawSprayStream(ctx, w * 0.62, h * 0.16, w * 0.76, h * 0.36, "#7DD3FC", 12, t, 2.3);
-            drawFlowTrack(ctx, w * 0.85, h * 0.20, w * 0.80, h * 0.42, "#FBBF24", 2.2, t, true);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFocusHalo(ctx, w * 0.47, h * 0.74, 24, "#FDE68A", t);
+      drawOrbitPath(ctx, w * 0.50, h * 0.52, 24, 10, "#38BDF8", t, 2.2, false);
+    } else {
+      drawSprayStream(ctx, w * 0.24, h * 0.34, w * 0.46, h * 0.66, "#7DD3FC", 14, t, 2.4);
+      drawMotionArrow(ctx, w * 0.46, h * 0.68, w * 0.65, h * 0.55, "#FBBF24", 2.2);
+    }
+  }
       },
-
-      "p1-experimental-gingivitis": {
-        imgSrc: "src/assets/images/experimental_gingivitis_loe_1795585003280.jpg",
-        duration: 8,
-        scenarios: [
+      "p1-experimental-gingivitis":       {
+        "imgSrc": "src/assets/images/p1t2_f1_day0_1795610763572.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. تجربة Löe 1965: ترك التفريش (7–21 يوم) وسيطرة Gram-Negative",
-            activePart: "day21",
-            focus: { cx: 49, cy: 50, scale: 1.38 },
-            seeIq: "باوع التدرج من اليمين لليسار: باليوم صفر اللثة وردية وسليمة ومن نوكف التفريش خلال 7 إلى 21 يوم تتضخم اللثة وتلتهب وتتحول البكتيريا إلى سالبة غرام شرسة",
-            whyIq: "سلايدات 7 و 8 تثبت إن تراكم البلاك مباشرة يسبب التهاب اللثة وإن التحكم الزين فوق اللثة يحسن حتى بيئة البلاك جوا اللثة",
-            tipIq: "Löe 1965: Stopped brushing -> Gingivitis in all within 7 to 21 days (Gram-negative)"
+            "label": "1. اليوم 0: خط الأساس بلثة وردية سليمة",
+            "activePart": "marginal_gingiva",
+            "focus": {
+              "cx": 48,
+              "cy": 54,
+              "scale": 1.15
+            },
+            "seeIq": "بالبداية (اليوم صفر) اللثة وردية متماسكة وحوافها حادة ومنقطة مثل قشر البرتقال وماكو أي نزف أو تورم",
+            "whyIq": "سلايد 7 يبدأ بمشاركين لثتهم سليمة تماماً قبل إيقاف التفريش لإثبات العلاقة المباشرة بين تراكم البلاك والالتهاب",
+            "tipIq": "Baseline: Firm scalloped coral-pink gingiva with zero bleeding"
           },
           {
-            label: "2. عودة الشفاء خلال 7 أيام وقاعدة الـ 48 ساعة / توصية 2020",
-            activePart: "recovery",
-            focus: { cx: 80, cy: 52, scale: 1.36 },
-            seeIq: "شوف المرحلة الأخيرة: بس رجعوا يفرشون زال الالتهاب خلال 7 أيام! والتجارب أثبتت لازم ينشال البلاك كل 48 ساعة وإرشادات 2020 توصي تفريش مرتين وتنظيف بيني مرة يومياً",
-            whyIq: "التنظيف اليومي بالبيت مع التنظيف الاحترافي المتكرر يقلل البلاك فوق اللثة وميكروبات الجيوب والفوركيشن ومسببات اللثة",
-            tipIq: "Reversible within 7 days · Experimental 48 hours · 2020 CPG: Brush twice + Interdental once/day"
+            "label": "2. أيام 7–21: التهاب اللثة التجريبي ونزف الحليمة",
+            "activePart": "cervical_plaque",
+            "focus": {
+              "cx": 49,
+              "cy": 66,
+              "scale": 1.22
+            },
+            "seeIq": "بعد ترك التفريش 7 إلى 21 يوم صار تراكم بلاك أبيض كثيف بعنق السن والتهمت الحافة اللثوية باللون الأحمر مع نزف نقطي تلقائي",
+            "whyIq": "بتجربة Löe (1965) كل المشاركين تطور عندهم التهاب لثة خلال 7 إلى 21 يوم وتحولت البكتيريا من موجبة لسالبة غرام",
+            "tipIq": "Löe 1965: Stopping brushing -> Gingivitis in all within 7–21 days (Gram-negative shift)"
+          },
+          {
+            "label": "3. الشفاء الكامل خلال 7 أيام بعد استئناف التنظيف",
+            "activePart": "papilla_response",
+            "focus": {
+              "cx": 50,
+              "cy": 62,
+              "scale": 1.14
+            },
+            "seeIq": "بمجرد رجعوا ينظفون يومياً رجعت اللثة وردية ومتماسكة واختفى الاحمرار والنزف خلال 7 أيام فقط",
+            "whyIq": "الالتهاب اللثوي الناتج عن البلاك قابل للانعكاس والتجارب أثبتت ضرورة إزالته كل 48 ساعة وإرشادات 2020 توصي مرتين تفريش + مرة بيني يومياً",
+            "tipIq": "Reversible within 7 days · Experimental 48h rule · 2020 CPG: Brush 2x + Interdental 1x/day"
+          },
+          {
+            "label": "4. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p1t2_xray_gingivitis_1795614767189.jpg",
+            "activePart": "papilla_response",
+            "focus": {
+              "cx": 50,
+              "cy": 46,
+              "scale": 1.15
+            },
+            "seeIq": "التهاب اللثة التجريبي يصيب الأنسجة الرخوة فقط بينما يظل العظم السنخي على ارتفاعه الطبيعي مع استمرارية الصفيحة القاسية (Lamina dura)",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تمثل خط الأساس العظمي السليم في التهاب اللثة التجريبي",
+            "tipIq": "Gingivitis involves NO alveolar bone loss on periapical radiograph (Crest intact 1–2 mm below CEJ)"
           }
         ],
-        parts: [
-          { key: "day0", en: "Day 0 Healthy Gingiva", ar: "اليوم صفر: لثة سليمة", posPct: [18, 46], iq: "حافة لثوية وردية متماسكة خالية من الالتهاب عند استمرار السيطرة على البلاك", clinical: "Baseline periodontal health" },
-          { key: "day21", en: "Days 7–21 Experimental Gingivitis", ar: "أيام 7–21: التهاب اللثة وبكتيريا Gram-negative", posPct: [49, 48], iq: "يتراكم البلاك فتظهر علامات التهاب اللثة عند الجميع وتسيطر بكتيريا غرام السالبة", clinical: "Löe (1965) Slides 7–8" },
-          { key: "recovery", en: "Reversible Within 7 Days + 48h Rule", ar: "الشفاء خلال 7 أيام وقاعدة 48 ساعة", posPct: [82, 46], iq: "عودة التنظيف تشفي اللثة خلال 7 أيام وتُزال تجريبياً كل 48 ساعة وعملياً مرتين يومياً", clinical: "Slides 8–10" }
-        ],
+        "parts": [
+          {
+            "key": "marginal_gingiva",
+            "en": "Marginal Gingiva Status (Health vs Erythema)",
+            "ar": "تغير حافة اللثة (من سليمة لملتهبة)",
+            "posPct": [
+              41,
+              30
+            ],
+            "iq": "تتحول من حافة وردية حادة إلى حافة حمراء متورمة عند تراكم البلاك وتتعافى خلال أسبوع بعد العودة للتنظيف",
+            "clinical": "Reversible inflammation in gingivitis (Slide 7)"
+          },
+          {
+            "key": "cervical_plaque",
+            "en": "Cervical Plaque Biofilm (Gram-Negative Shift)",
+            "ar": "تراكم البلاك العنقي وتحوله لسالبة غرام",
+            "posPct": [
+              41,
+              71
+            ],
+            "iq": "بغياب الإزالة الميكانيكية يتراكم البلاك على عنق السن وتتغلب بكتيريا Gram-negative خلال أسابيع",
+            "clinical": "Experimental clearance needed at least every 48 hours"
+          },
+          {
+            "key": "papilla_response",
+            "en": "Interdental Papilla Bleeding & Recovery",
+            "ar": "نزف الحليمة البينية واستجابتها للعلاج",
+            "posPct": [
+              53,
+              74
+            ],
+            "iq": "تضبط حدة الاستجابة الالتهابية والسيطرة الممتازة فوق اللثة تقلل حتى ميكروبات تحت اللثة",
+            "clinical": "Slide 8: Supragingival control improves subgingival ecology"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.22, h * 0.50, w * 0.45, h * 0.50, "#FBBF24", 2.3, t, false);
-            drawShockRings(ctx, w * 0.49, h * 0.48, 28, "#EF4444", 3, t * 1.3);
-          } else {
-            drawFlowTrack(ctx, w * 0.55, h * 0.50, w * 0.78, h * 0.50, "#10B981", 2.3, t, false);
-            drawFocusHalo(ctx, w * 0.82, h * 0.46, 26, "#34D399", t);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFocusHalo(ctx, w * 0.41, h * 0.30, 22, "#5EEAD4", t);
+      drawFlowTrack(ctx, w * 0.41, h * 0.71, w * 0.53, h * 0.74, "#7DD3FC", 2.1, t, true);
+    } else if(st.scIdx === 1){
+      drawFocusHalo(ctx, w * 0.53, h * 0.74, 26, "#F87171", t);
+      drawShockRings(ctx, w * 0.41, h * 0.71, 24, "#FBBF24", 2, t);
+    } else if(st.scIdx === 2){
+      drawFlowTrack(ctx, w * 0.41, h * 0.30, w * 0.53, h * 0.74, "#34D399", 2.2, t, false);
+    } else {
+      drawFlowTrack(ctx, w * 0.28, h * 0.43, w * 0.72, h * 0.43, "#5EEAD4", 2.2, t, false);
+      drawFocusHalo(ctx, w * 0.41, h * 0.43, 20, "#38BDF8", t);
+    }
+  }
       },
-
-      "p2-motivation-disclosing": {
-        imgSrc: "src/assets/images/gingiva_xray_disclosing_1795585003647.jpg",
-        duration: 8,
-        scenarios: [
+      "p2-motivation-disclosing":       {
+        "imgSrc": "src/assets/images/p2t1_f1_inflamed_1795610957372.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. عرض اللثة (سليمة vs ملتهبة) وأشعة فقدان العظم (Periodontitis X-Ray)",
-            activePart: "xray",
-            focus: { cx: 34, cy: 50, scale: 1.28 },
-            seeIq: "باوع الألواح من اليسار لليمين: باليسار نقارن للمراجع لثته الملتهبة باللثة الوردية السليمة وبالوسط نراويه أشعة العظم الطبيعي مقابل أشعة التآكل العظمي وفقدان العظم",
-            whyIq: "سلايدات 12–14 تعلمنا إن المريض لازم يفهم المسببات والأعراض والعواقب والـ prognosis وعلاقة البلاك بالقلح بصرياً",
-            tipIq: "Motivation: Etiology + Symptoms + Consequences + Prognosis + Plaque/Calculus relationship"
+            "label": "1. المقارنة المباشرة: لثة علوية سليمة مقابل سفلية ملتهبة مع القلح",
+            "activePart": "healthy_zone",
+            "focus": {
+              "cx": 48,
+              "cy": 62,
+              "scale": 1.18
+            },
+            "seeIq": "باوع الفرق بنفس الفم: فوك لثة وردية منقطة وسليمة وجوة حليمات حمراء متورمة مع تكلس قلح أصفر بين القواطع",
+            "whyIq": "سلايد 12 و 13 يشددون على إن المراجع يفهم السبب والأعراض والعواقب والإنذار بمقارنة لثته الملتهبة بالسليمة وعلاقة البلاك بالقلح",
+            "tipIq": "Motivation Steps: Etiology / Symptoms / Consequences / Prognosis / Plaque-Calculus link"
           },
           {
-            label: "2. كشف البلاك بالصبغة (Disclosing Agent) والتركيز بين الأسنان",
-            activePart: "disclosing",
-            focus: { cx: 82, cy: 50, scale: 1.36 },
-            seeIq: "شوف اللوح اليمين: الأسنان شكلها أبيض بس بعد صبغة الـ Disclosing صار البلاك أحمر فاقع عالحافة اللثوية وبين الأسنان لأن البلاك أصلاً يبدأ interproximally",
-            whyIq: "سلايد 11 و 15 يوضحون ليش التفريش مرتين مهم وليش الفرشة وحدها ما تكفي ولماذا الصبغة تقنع المريض فوراً",
-            tipIq: "Slide 15 Disclosing Agent · Slide 11: Interdental lesions + Interproximal plaque start"
+            "label": "2. كشف البلاك المخفي بالصبغة عند حافة اللثة وبين الأسنان",
+            "activePart": "active_target",
+            "focus": {
+              "cx": 54,
+              "cy": 46,
+              "scale": 1.18
+            },
+            "seeIq": "بعد وضع صبغة الـ Disclosing صبغت كل الحواف اللثوية والمناطق البينية بالوردي الفاقع رغم إن المراجع جان يحسب أسنانه نظيفة",
+            "whyIq": "سلايد 15 و 11: الصبغة تكشف للمريض فشل التفريش السطحي بالوصول لبداية البلاك البيني فتكسر الأعذار وتبني الحافز فوراً",
+            "tipIq": "Slide 15 Disclosing Agent + Slide 11: Plaque & lesions mostly start interproximally"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p2t1_xray_boneloss_1795614766594.jpg",
+            "activePart": "hidden_detail",
+            "focus": {
+              "cx": 50,
+              "cy": 48,
+              "scale": 1.15
+            },
+            "seeIq": "الأشعة تراوي المراجع بعينه شلون نزل العظم السنخي أفقياً بعيد عن عنق السن وظهرت شوكات قلح متكلسة بين الجذور",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر فقدان العظم والتكلسات في التهاب دواعم السن (سلايد 14)",
+            "tipIq": "Slide 14: Show patients radiographs demonstrating alveolar bone loss to reinforce motivation"
           }
         ],
-        parts: [
-          { key: "gingiva", en: "Healthy vs Inflamed Gingiva (Slide 13)", ar: "اللثة السليمة مقابل الملتهبة", posPct: [24, 52], iq: "مقارنة اللون الوردي الثابت مع اللثة الحمراء المتورمة والقلح لإظهار علامات الالتهاب", clinical: "Patient visual motivation" },
-          { key: "xray", en: "Normal vs Periodontitis X-Ray (Slide 14)", ar: "أشعة العظم الطبيعي vs التآكل العظمي", posPct: [58, 50], iq: "تشير الأسهم لنزول العظم السنخي بعيداً عن الـ ACJ في مريض التهاب دواعم السن", clinical: "Show patient the bone loss" },
-          { key: "disclosing", en: "Disclosing Agent Stained Plaque (Slide 15)", ar: "الصبغة الكاشفة للبلاك", posPct: [82, 48], iq: "تصبع البلاك المخفي بالوردي والأحمر خصوصاً بالمناطق البينية وحافة اللثة", clinical: "Before vs After disclosing" }
-        ],
+        "parts": [
+          {
+            "key": "healthy_zone",
+            "en": "Firm Coral-Pink Stippled Gingiva (Control Reference)",
+            "ar": "اللثة السليمة الوردية كمرجع مقارن",
+            "posPct": [
+              44,
+              28
+            ],
+            "iq": "نستعملها بالعيادة كنموذج بصري نراويه للمراجع حتى يقارن بيه لثته الملتهبة",
+            "clinical": "Slide 13 Clinical visual demonstration"
+          },
+          {
+            "key": "active_target",
+            "en": "Disclosed Marginal & Interproximal Plaque Zone",
+            "ar": "منطقة الالتهاب والبلاك المصبوغ بينياً",
+            "posPct": [
+              33,
+              77
+            ],
+            "iq": "تظهر الصبغة الكاشفة تركز البلاك عند حافة اللثة وبين الأسنان حيث تبدأ أغلب الآفات",
+            "clinical": "Brushing 2x/day essential + Interproximal plaque starts first"
+          },
+          {
+            "key": "hidden_detail",
+            "en": "Calculus Deposits & Lingual Mirror Inspection",
+            "ar": "ترسبات القلح والفحص بالمرآة اللسانية",
+            "posPct": [
+              56,
+              65
+            ],
+            "iq": "فحص المراة يكشف الجهات المخفية والتكلسات التي تتكون من استمرار بقاء البلاك دون إزالة",
+            "clinical": "Slides 12–15 Plaque vs Calculus relationship"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.24, h * 0.52, 24, "#F59E0B", t);
-            drawFlowTrack(ctx, w * 0.50, h * 0.50, w * 0.58, h * 0.50, "#38BDF8", 2.2, t, false);
-          } else {
-            drawFocusHalo(ctx, w * 0.82, h * 0.48, 32, "#EC4899", t);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFocusHalo(ctx, w * 0.44, h * 0.28, 22, "#5EEAD4", t);
+      drawFocusHalo(ctx, w * 0.33, h * 0.77, 26, "#F87171", t * 1.2);
+    } else if(st.scIdx === 1){
+      drawFlowTrack(ctx, w * 0.33, h * 0.77, w * 0.56, h * 0.65, "#F472B6", 2.2, t, true);
+    } else {
+      drawFlowTrack(ctx, w * 0.25, h * 0.45, w * 0.75, h * 0.45, "#F87171", 2.2, t, false);
+      drawFocusHalo(ctx, w * 0.46, h * 0.40, 22, "#FBBF24", t);
+    }
+  }
       },
-
-      "p2-toothbrush-design": {
-        imgSrc: "src/assets/images/toothbrush_abrasion_bristles_1795585004124.jpg",
-        duration: 8,
-        scenarios: [
+      "p2-toothbrush-design":       {
+        "imgSrc": "src/assets/images/p2t2_f1_bristles_macro_1795610769949.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. أقطار الشعيرات (0.2 ملم ناعم vs 0.3 ملم متوسط vs 0.4 ملم خشن)",
-            activePart: "soft02",
-            focus: { cx: 28, cy: 48, scale: 1.36 },
-            seeIq: "باوع مقارنة القطر: باليسار شعيرات ناعمة مستوية 0.2 ملم (Soft — الأكثر توصية) وبالنص شعيرات خشنة 0.4 ملم تحك السن وتجرح اللثة",
-            whyIq: "سلايدات 17 و 20 تؤكد تجنب الفرشة الـ hard واختيار التصميم B المستوي الناعم بقطر 0.2 ملم",
-            tipIq: "Slide 20: Soft 0.2 mm (B most recommended) · Medium 0.3 mm · Hard 0.4 mm"
+            "label": "1. مقارنة أقطار الشعيرات وتصميم الرأس المستوي الناعم",
+            "activePart": "soft_tuft",
+            "focus": {
+              "cx": 36,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "شوف ألياف النايلون المستوية الدقيقة: الفرشة الناعمة بقطر 0.2 ملم هي التصميم الموصى به (B) مقارنة بالمتوسطة 0.3 والخشنة 0.4 ملم",
+            "whyIq": "سلايد 17 و 20 يحذران من الفرشة الخشنة لأنها تزيد خطر التآكل العنقي والانحسار بدون ميزة حقيقية بتنظيف البلاك",
+            "tipIq": "Slide 20: Soft 0.2 mm (Flat Design B recommended) · Medium 0.3 mm · Hard 0.4 mm"
           },
           {
-            label: "2. ثلاثي التآكل العنقي والانحسار (Cervical Abrasion Triad)",
-            activePart: "abrasion",
-            focus: { cx: 74, cy: 55, scale: 1.40 },
-            seeIq: "شوف الجذور المكشوفة باليمين: صارت بيها حفر مثل المثلث بالعنق وانحسرت اللثة بسبب فرشة خشنة + تفريش أفقي عنيف + معجون خشن حيل",
-            whyIq: "سلايد 18 و 19 يربطون كفاءة التفريش بـ 4 عوامل (التصميم والمهارة والتكرار والمدة) ويحذرون من أسباب التآكل الثلاثة",
-            tipIq: "Slide 18 Triad: Hard brush + Vigorous horizontal brushing + Extremely abrasive dentifrice"
+            "label": "2. ثلاثي التآكل العنقي: حزوز عنقية وانحسار لثوي واضح",
+            "activePart": "stiff_risk",
+            "focus": {
+              "cx": 52,
+              "cy": 44,
+              "scale": 1.22
+            },
+            "seeIq": "شوف حفر التآكل المائلة على أعناق الناب والضاحك وانحسار اللثة الفوكاها لأن المراجع يفرش بعنف أفقياً بفرشة خشنة ومعجون كاشط",
+            "whyIq": "سلايد 18 يجمع أسباب التآكل العنقي بثلاثية واضحة وسلايد 19 يربط كفاءة التفريش بتصميم الفرشة والمهارة والتكرار والمدة",
+            "tipIq": "Slide 18 Triad: Hard brush + Vigorous horizontal brushing + Extremely abrasive dentifrice"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p2t2_xray_abrasion_1795614767540.jpg",
+            "activePart": "cervical_wear",
+            "focus": {
+              "cx": 48,
+              "cy": 44,
+              "scale": 1.18
+            },
+            "seeIq": "بالأشعة تبين حزوز التآكل العنقي مثل ثلوم سوداء حادة بشكل V عند الملتقى المينائي الملاطي بينما العظم حولها سليم نسبياً",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر ثلوم التآكل العنقي على شكل حرف V عند عنق الضواحك",
+            "tipIq": "Radiographic hallmark of toothbrush abrasion: sharp V-shaped cervical radiolucent notches at CEJ"
           }
         ],
-        parts: [
-          { key: "soft02", en: "Soft 0.2 mm Flat Design (B Recommended)", ar: "شعيرات ناعمة 0.2 ملم مستوية (الموصى بها)", posPct: [14, 45], iq: "أطرى شعيرات تحمي اللثة وتصل بأمان للأخدود اللثوي بدون خدش", clinical: "Soft=0.2 · Med=0.3 · Hard=0.4 mm" },
-          { key: "hard04", en: "Hard 0.4 mm Stiff Bristles (Avoid)", ar: "شعيرات خشنة 0.4 ملم (تُتجنب)", posPct: [35, 45], iq: "تاريخياً كانت من hog bristles والخشنة تكشط الأسنان وتخدش اللثة", clinical: "Slide 17 Avoid hard brushes" },
-          { key: "abrasion", en: "Cervical Wedge Abrasion & Recession", ar: "التآكل العنقي وانحسار اللثة", posPct: [73, 56], iq: "حزوز وتآكل عنق السن نتيجة الفرشة الخشنة والتفريش الأفقي العنيف والمعجون شديد الكشط", clinical: "Slide 18 Etiology Triad" }
-        ],
+        "parts": [
+          {
+            "key": "soft_tuft",
+            "en": "Soft 0.2 mm Flat-Plane Nylon Tuft",
+            "ar": "شعيرات ناعمة 0.2 ملم بمستوى مسطح",
+            "posPct": [
+              32,
+              46
+            ],
+            "iq": "تنظف بأمان دون تجريح اللثة وتحافظ على حافة اللثة من الانحسار والرض الميكانيكي",
+            "clinical": "Flat multi-tufted B design most recommended (Slide 20)"
+          },
+          {
+            "key": "stiff_risk",
+            "en": "Hard 0.4 mm Risk Zone & Canine Neck Loss",
+            "ar": "مخاطر الشعيرات الخشنة 0.4 ملم وتآكل الناب",
+            "posPct": [
+              68,
+              46
+            ],
+            "iq": "تزيد من كشط العنق واللثة خصوصاً عند اجتماعها مع التفريش الأفقي القوي",
+            "clinical": "Replaced historical hog bristles with controlled nylon"
+          },
+          {
+            "key": "cervical_wear",
+            "en": "Wedge-Shaped Cervical Abrasion Defect",
+            "ar": "آفة التآكل العنقي الوتدية",
+            "posPct": [
+              48,
+              60
+            ],
+            "iq": "حفرة متعمقة في العاج والملاط المكشوف تسبب حساسية وتشوهات عنقية مميزة",
+            "clinical": "4 Efficiency Factors: Design · Skill · Frequency · Duration"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.14, h * 0.45, 24, "#10B981", t);
-            drawShockRings(ctx, w * 0.35, h * 0.45, 24, "#EF4444", 2, t * 1.2);
-          } else {
-            drawFlowTrack(ctx, w * 0.64, h * 0.56, w * 0.82, h * 0.56, "#EF4444", 2.3, t, true);
-            drawFocusHalo(ctx, w * 0.73, h * 0.56, 26, "#F59E0B", t);
-          }
-        }
+    if(st.scIdx === 0){
+      drawOrbitPath(ctx, w * 0.32, h * 0.46, 20, 8, "#5EEAD4", t, 2.6, true);
+      drawMotionArrow(ctx, w * 0.68, h * 0.40, w * 0.68, h * 0.52, "#F87171", 2.3);
+    } else if(st.scIdx === 1){
+      drawFocusHalo(ctx, w * 0.48, h * 0.60, 24, "#FBBF24", t);
+      drawFlowTrack(ctx, w * 0.42, h * 0.60, w * 0.56, h * 0.60, "#EF4444", 2.4, t, true);
+    } else {
+      drawFocusHalo(ctx, w * 0.44, h * 0.42, 22, "#FBBF24", t);
+      drawFocusHalo(ctx, w * 0.56, h * 0.42, 20, "#EF4444", t * 1.1);
+    }
+  }
       },
-
-      "p3-soft-powered": {
-        imgSrc: "src/assets/images/soft_bristles_powered_brush_1795585003946.jpg",
-        duration: 8,
-        scenarios: [
+      "p3-soft-powered":       {
+        "imgSrc": "src/assets/images/p3t1_f1_soft_flex_1795610772047.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. مزايا الشعيرات الناعمة (مرنة وتنظف تحت الحافة وتوصل أعمق)",
-            activePart: "sulcular",
-            focus: { cx: 26, cy: 52, scale: 1.38 },
-            seeIq: "شوف اليسار: الشعيرات الناعمة المرنة تنحني بلطف وتفوت شوية جوا حافة اللثة وتوصل أعمق بين الأسنان بدون ما تأذي المينا (ونبدلها كل 3–4 أشهر)",
-            whyIq: "سلايد 21 و 22: صلابة الشعيرات ما تأثر على تآكل المينا لكن التفريش العنيف يسوي انحسار و wedge defects وتقرحات",
-            tipIq: "Soft bristles: Flexible + Below margin + Farther apically · Replace every 3 to 4 months"
+            "label": "1. مرونة الشعيرات الناعمة ودخولها اللطيف تحت حافة اللثة",
+            "activePart": "flex_tips",
+            "focus": {
+              "cx": 44,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "شوف شلون أطراف الشعيرات الناعمة تنثني بنعومة وتدخل شوية جوا حافة اللثة وتوصل أعمق بين الأسنان بلا خدش أو تقرحات",
+            "whyIq": "سلايد 21 و 22: صلابة الشعيرات ما تأثر على تآكل المينا لكن الشعيرات الناعمة أكثر مرونة ونبدلها كل 3 إلى 4 أشهر أو عندما تنفرش",
+            "tipIq": "Soft bristles: Flexible + Below gingival margin + Farther apically · Replace q3–4 mo"
           },
           {
-            label: "2. قوة القص السائلة Hydrodynamic Shear Forces للفرشة الكهربائية",
-            activePart: "hydro",
-            focus: { cx: 74, cy: 50, scale: 1.38 },
-            seeIq: "شوف اليمين: الرأس الدوار المتذبذب يشتغل بتلامس ميكانيكي + طاقة صوتية + فقاعات Hydrodynamic shear تمزق البلاك حتى شوية بعيد عن الشعيرات بين الأسنان",
-            whyIq: "سلايد 23–25: اخترعت سنة 1939 وتقلل البلاك 11% أفضل خلال 3 أشهر",
-            tipIq: "Powered: Mechanical contact + Acoustic energy + Hydrodynamic shear -> 11% better plaque (3 mo)"
+            "label": "2. الرأس الاهتزازي الدوار + قوى القص السائلة (Hydrodynamic Shear)",
+            "activePart": "hydro_shear",
+            "focus": {
+              "cx": 48,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "شوف رذاذ السوائل والحركة الدوارة: الفرشة الكهربائية تشتغل بتلامس ميكانيكي + طاقة صوتية + قوى قص سائلة تفتت البلاك حتى بين الأسنان",
+            "whyIq": "سلايد 23–25: اخترعت سنة 1939 وتطورت لـ oscillating-rotating وحققت تقليل بلاك أفضل بـ 11% خلال 3 أشهر",
+            "tipIq": "Powered: Mechanical contact + Acoustic energy + Hydrodynamic shear -> 11% better plaque at 3 mo"
           }
         ],
-        parts: [
-          { key: "sulcular", en: "Flexible Soft Bristles Below Margin", ar: "الشعيرات الناعمة المرنة تحت الحافة", posPct: [25, 60], iq: "تدخل شوية تحت حافة اللثة وتوصل أعمق للسطوح الجانبية وتبدل كل 3 إلى 4 أشهر", clinical: "Slides 21–22" },
-          { key: "osc", en: "Oscillating-Rotating Powered Head", ar: "الرأس الاهتزازي الدوار", posPct: [76, 20], iq: "تطور من حركة ذهاب وإياب سنة 1939 إلى oscillating and rotating وتقلل البلاك 11% أفضل", clinical: "Slides 23 & 25" },
-          { key: "hydro", en: "Hydrodynamic Shear Forces (Interproximal)", ar: "قوى القص السائلة بين الأسنان", posPct: [74, 52], iq: "طاقة صوتية وقوى قص بالسائل تفكك البلاك لمسافة قصيرة وتفسر التنظيف الإضافي بين الأسنان", clinical: "Slide 24 Interproximal Biofilm" }
-        ],
+        "parts": [
+          {
+            "key": "flex_tips",
+            "en": "Flexible Soft Bristle Tips Below Margin",
+            "ar": "مرونة الشعيرات تحت حافة اللثة",
+            "posPct": [
+              45,
+              42
+            ],
+            "iq": "تنساب بمرونة داخل الأخدود اللثوي وتصل مسافة أعمق بين السطوح الجانبية دون إحداث تقرحات",
+            "clinical": "Replace every 3–4 months or earlier if frayed"
+          },
+          {
+            "key": "hydro_shear",
+            "en": "Hydrodynamic Shear & Acoustic Energy",
+            "ar": "قوى القص السائلة والطاقة الصوتية",
+            "posPct": [
+              65,
+              58
+            ],
+            "iq": "اضطراب السوائل يفكك البلاك لمسافة قصيرة تتعدى أطراف الشعيرات ويفسر الفعالية الإضافية بين الأسنان",
+            "clinical": "Slide 24 Mechanism beyond bristle reach"
+          },
+          {
+            "key": "head_osc",
+            "en": "Oscillating-Rotating Powered Brush Head",
+            "ar": "الرأس الاهتزازي الدوار",
+            "posPct": [
+              62,
+              26
+            ],
+            "iq": "تطور منذ 1939 ليمنح تفوقاً بنسبة 11% في إزالة البلاك خلال 3 أشهر مقارنة باليدوية",
+            "clinical": "Slides 23 & 25"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.25, h * 0.44, w * 0.25, h * 0.62, "#10B981", 2.2, t, true);
-          } else {
-            drawOrbitPath(ctx, w * 0.76, h * 0.20, 22, 22, "#38BDF8", t, 6, false);
-            drawSprayStream(ctx, w * 0.74, h * 0.34, w * 0.74, h * 0.62, "#7DD3FC", 14, t, 2.3);
-          }
-        }
+    drawFlowTrack(ctx, w * 0.45, h * 0.42, w * 0.45, h * 0.50, "#5EEAD4", 2.1, t, true);
+    if(st.scIdx >= 1){
+      drawShockRings(ctx, w * 0.65, h * 0.58, 28, "#38BDF8", 3, t * 1.2);
+      drawOrbitPath(ctx, w * 0.62, h * 0.26, 18, 18, "#FDE68A", t, 3.4, false);
+    }
+  }
       },
-
-      "p3-compliance-connected": {
-        imgSrc: "src/assets/images/powered_indications_connected_1795585004601.jpg",
-        duration: 8,
-        scenarios: [
+      "p3-compliance-connected":       {
+        "imgSrc": "src/assets/images/p3t2_f1_ortho_powered_1795610829403.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. فئات الاستفادة (التقويم الثابت والإعاقات) vs خطر التفريش العنيف",
-            activePart: "ortho",
-            focus: { cx: 34, cy: 48, scale: 1.32 },
-            seeIq: "باوع اليسار والوسط: الفرشة الكهربائية ممتازة لمرضى التقويم الثابت والأطفال والإعاقات والمستشفيات بس التفريش العنيف (بالوسط) يسبب انحسار اللثة وتآكل الجذر",
-            whyIq: "سلايد 27 يميز بدقة إن مرضى rheumatoid arthritis والأطفال المتحفزين و chronic periodontitis ما يحصلون ميزة فوق اليدوية",
-            tipIq: "Benefits: Children / Disabilities / Hospitalized / Fixed Ortho · No extra: RA / Motivated kids / Chronic perio"
+            "label": "1. استطباب واضح: تنظيف محيط حاصرات التقويم الثابت بالكهربائية",
+            "activePart": "ortho_bracket",
+            "focus": {
+              "cx": 54,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "شوف حاصرات التقويم الثابت والسلك المعدني شلون يلتف حولهم رأس الفرشة الكهربائية بكفاءة خاصة لمن يفتقد المهارة اليدوية",
+            "whyIq": "سلايد 27 يحدد 4 فئات تستفيد بوضوح (الأطفال والإعاقات والمرضى بالمستشفيات والتقويم الثابت) بينما التهاب اللثة المزمن والأطفال المتحفزون ما ياخذون ميزة إضافية",
+            "tipIq": "Benefit: Children / Disabilities / Hospitalized / Fixed Ortho · No extra: RA / Motivated kids / Chronic perio"
           },
           {
-            label: "2. الفرشة الذكية Connected Brush (تطبيق + AI + تذكيرات)",
-            activePart: "app",
-            focus: { cx: 82, cy: 52, scale: 1.36 },
-            seeIq: "شوف اليمين: الفرشة المتصلة لاسلكياً بالموبايل تحلل التفريش بالـ AI وتنطي تقييم وتدز تذكيرات فتزيد كفاءة التفريش ومدته",
-            whyIq: "سلايد 26 و 30: التوقف بعد 5–6 أشهر بعد زوال الـ novelty يعالج بالتذكيرات والتوجيه الذكي بالـ Connected brush",
-            tipIq: "Connected Brush (Slide 30): Wireless app + AI feedback + Reminders -> improves brushing & duration"
+            "label": "2. الفرشاة المتصلة وتطبيق التتبع والذكاء الاصطناعي لمعالجة الملل",
+            "activePart": "bristle_sweep",
+            "focus": {
+              "cx": 56,
+              "cy": 50,
+              "scale": 1.15
+            },
+            "seeIq": "الفرشة الذكية تتصل لاسلكياً بالتطبيق وتعرض نسب تغطية كل ربع بالفك مع تذكيرات وتوجيه AI لمنع التوقف بعد 5 إلى 6 أشهر",
+            "whyIq": "سلايد 26 و 30: المراجع ممكن يترك الكهربائية بعد 5–6 أشهر بس يروح الانبهار والـ Connected Brush تحل هاي المشكلة وترفع الجودة والمدة",
+            "tipIq": "5–6 months novelty drop solved by Connected Brush (Wireless app + AI + Reminders)"
           }
         ],
-        parts: [
-          { key: "ortho", en: "Fixed Ortho Appliances (Indicated)", ar: "التقويم الثابت (مستفيد من الكهربائية)", posPct: [19, 47], iq: "أحد الفئات الأربع المستفيدة بوضوح من الفرشة الكهربائية مع الأطفال والمعاقين ومرضى المستشفيات", clinical: "Slide 27 Indications" },
-          { key: "trauma", en: "Vigorous Brushing Trauma (Fig 50.5)", ar: "رض وتآكل الجذر من التفريش العنيف", posPct: [50, 46], iq: "يؤدي التفريش القوي لتجريح اللثة وتآكل سطوح الجذور وانحسارها", clinical: "Slide 29 Fig 50.5" },
-          { key: "app", en: "Wireless Connected Brush + AI App", ar: "الفرشة المتصلة وتطبيق الذكاء الاصطناعي", posPct: [84, 48], iq: "تتصل لاسلكياً بالهاتف وتستخدم AI لتوجيه المريض وإرسال التذكيرات فتحسن الجودة والمدة", clinical: "Slide 30 Connected Brush" }
-        ],
+        "parts": [
+          {
+            "key": "ortho_bracket",
+            "en": "Fixed Orthodontic Appliances (Key Indication)",
+            "ar": "التقويم الثابت واليد الميكانيكية",
+            "posPct": [
+              56,
+              40
+            ],
+            "iq": "تستفيد الأجهزة الثابتة والمرضى ذوو المهارة المحدودة أو الإعاقات من حركة الرأس الدوارة",
+            "clinical": "No additional benefit over good manual in RA / motivated patients"
+          },
+          {
+            "key": "bristle_sweep",
+            "en": "Gentle Sweep vs Vigorous Trauma Risk",
+            "ar": "مسح اللثة مقابل خطر التفريش العنيف",
+            "posPct": [
+              52,
+              62
+            ],
+            "iq": "تُوجه الشعيرات بلطف حول الحاصرات دون ضغط عنيف يسبب انحسار اللثة وتآكل الجذر (Fig 50.5)",
+            "clinical": "Slide 29 Warning"
+          },
+          {
+            "key": "connected_app",
+            "en": "Connected Brush + AI Guidance & Reminders",
+            "ar": "التوجيه بالذكاء الاصطناعي والتذكيرات",
+            "posPct": [
+              62,
+              82
+            ],
+            "iq": "يراقب تغطية الأرباع ومدة التفريش للتغلب على تراجع الالتزام بعد 5 إلى 6 أشهر",
+            "clinical": "Slide 30 Improves quality & brushing duration"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.19, h * 0.47, 24, "#10B981", t);
-            drawShockRings(ctx, w * 0.50, h * 0.46, 24, "#EF4444", 2, t * 1.2);
-          } else {
-            drawFlowTrack(ctx, w * 0.77, h * 0.40, w * 0.89, h * 0.53, "#38BDF8", 2.2, t, false);
-            drawFocusHalo(ctx, w * 0.88, h * 0.53, 24, "#FCD34D", t);
-          }
-        }
+    if(st.scIdx === 0){
+      drawOrbitPath(ctx, w * 0.56, h * 0.40, 18, 14, "#38BDF8", t, 2.8, false);
+      drawFlowTrack(ctx, w * 0.44, h * 0.62, w * 0.60, h * 0.62, "#5EEAD4", 2.1, t, true);
+    } else {
+      drawFocusHalo(ctx, w * 0.62, h * 0.82, 24, "#FDE68A", t);
+    }
+  }
       },
-
-      "p4-dentifrice-contents": {
-        imgSrc: "src/assets/images/dentifrice_ingredients_abrasives_1795585006090.jpg",
-        duration: 8,
-        scenarios: [
+      "p4-dentifrice-contents":       {
+        "imgSrc": "src/assets/images/p4t1_f1_paste_gel_powder_1795610827773.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. أشكال المعجون الثلاثة (معجون vs بودرة 95% كاشط vs جل)",
-            activePart: "powder",
-            focus: { cx: 64, cy: 58, scale: 1.32 },
-            seeIq: "شوف الثلاثة بالصور: المعجون بالأنبوبة والجل الصافي بيهم 20–40% مواد كاشطة أما بودرة الأسنان البيضاء بالوسط فتحتوي 95% مواد كاشطة خشنة حيل",
-            whyIq: "سلايد 32 و 35: المعجون عموماً ما يفرق هواية عن التفريش بدونه (49.2% vs 50.3% عند Valkenburg) إلا ويا Triclosan أو SnF",
-            tipIq: "Valkenburg: 49.2% without vs 50.3% with · SnF & Triclosan better than NaF · Powder = 95% abrasive"
+            "label": "1. الأشكال الفيزيائية الثلاثة: المعجون والجل والبودرة (95% كاشط)",
+            "activePart": "paste_form",
+            "focus": {
+              "cx": 52,
+              "cy": 50,
+              "scale": 1.18
+            },
+            "seeIq": "شوف الفارق الواضح عاللوح الزجاجي: المعجون الكريمي والجل بيهم 20 إلى 40% مواد كاشطة بينما البودرة البيضاء تحتوي 95% مواد كاشطة خشنة",
+            "whyIq": "سلايد 35 ينبه إن بودرة الأسنان أشد كشطاً بكثير وسلايد 32 يوضح دور الـ Triclosan و SnF الفعال فوق NaF",
+            "tipIq": "Pastes & Gels = 20–40% abrasive vs Tooth Powder = ~95% abrasive · Valkenburg: 49.2% without vs 50.3% with"
           },
           {
-            label: "2. المكونات التسعة والـ 40 ضعف كشط (Silica/Alumina & Humectants)",
-            activePart: "abrasive",
-            focus: { cx: 28, cy: 48, scale: 1.34 },
-            seeIq: "باوع اليسار: بلورات السيليكون والألمنيوم الكاشطة تقوي فعل التفريش 40 ضعف والمرطبات (Humectants) تمنع جفافه والمنظفات تصنع الرغوة",
-            whyIq: "سلايد 34 و 35 يشرح دور كل مكون من المكونات الـ 9 وتأثير الأملاح غير الذائبة عالتلميع والكشط",
-            tipIq: "9 Contents: Abrasives (20–40% · 40x action), Water, Humectants, Detergent, Flavor, Sweetener, Therapeutic, Color, Preservatives"
+            "label": "2. فعل الرغوة بالمنظفات والـ 40 ضعف كشط داخل الفم",
+            "activePart": "gel_form",
+            "focus": {
+              "cx": 46,
+              "cy": 56,
+              "scale": 1.2
+            },
+            "seeIq": "أثناء التفريش تصنع المنظفات (Detergents) رغوة تعلق البلاك المفكك وتساعد بلورات الكشط غير الذائبة بمضاعفة فعالية التفريش",
+            "whyIq": "سلايد 34 و 35: المواد الكاشطة تضاعف الكشط حتى 40 مرة والمرطبات تحفظ الرطوبة ضمن المكونات التسعة الأساسية",
+            "tipIq": "Abrasives reinforce brushing 40x · 9 components include water / humectants / detergents / therapeutic agents"
           }
         ],
-        parts: [
-          { key: "abrasive", en: "Insoluble Abrasives (40x Action)", ar: "المواد الكاشطة غير الذائبة (40x)", posPct: [16, 40], iq: "مثل أكاسيد السيليكون والألمنيوم وتزيد كشط التفريش لحد 40 مرة وتشكل 20–40% من المعاجين", clinical: "Slides 34–35" },
-          { key: "paste", en: "Pastes & Gels (20–40% Abrasives)", ar: "المعاجين والجل (20–40% كاشط)", posPct: [38, 59], iq: "أكثر الأشكال استخداماً وتنظف وتلمع السطوح وإضافة SnF أو triclosan تزيد إزالة البلاك", clinical: "Slides 32–33" },
-          { key: "powder", en: "Tooth Powder (~95% Abrasive Materials)", ar: "مسحوق الأسنان (95% كاشط)", posPct: [63, 66], iq: "كاشط أعلى بكثير من المعجون لاحتوائه على 95% مواد كاشطة تقريباً", clinical: "Slide 35 Exam Trap" }
-        ],
+        "parts": [
+          {
+            "key": "paste_form",
+            "en": "Dentifrice Paste & Detergent Foam",
+            "ar": "المعجون ورغوة المنظفات",
+            "posPct": [
+              29,
+              55
+            ],
+            "iq": "أكثر الأشكال استخداماً ويحتوي مرطبات ومنظفات تصنع الرغوة وتعلق الفضلات لإخراجها",
+            "clinical": "Contains 20–40% insoluble abrasives"
+          },
+          {
+            "key": "gel_form",
+            "en": "Translucent Gel & 40x Insoluble Abrasives",
+            "ar": "الجل ومفعول الكشط بـ 40 ضعف",
+            "posPct": [
+              48,
+              53
+            ],
+            "iq": "تستخدم أكاسيد السيليكون والألمنيوم غير الذائبة لتلميع السطوح وتقوية كشط الفرشاة",
+            "clinical": "Slide 35: Increases abrasive action up to 40x"
+          },
+          {
+            "key": "powder_95",
+            "en": "Tooth Powder (~95% Abrasive Content)",
+            "ar": "مسحوق الأسنان (95% مواد كاشطة)",
+            "posPct": [
+              67,
+              45
+            ],
+            "iq": "تركيبة جافة شديدة الكشط قد تؤذي الأنسجة الرخوة والعنق عند الإفراط باستخدامها",
+            "clinical": "Exam critical figure: 95% abrasive"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.38, h * 0.59, 24, "#10B981", t);
-            drawShockRings(ctx, w * 0.63, h * 0.66, 26, "#EF4444", 3, t * 1.2);
-          } else {
-            drawFocusHalo(ctx, w * 0.16, h * 0.40, 26, "#F59E0B", t);
-            drawFlowTrack(ctx, w * 0.16, h * 0.46, w * 0.35, h * 0.58, "#38BDF8", 2.1, t, false);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFocusHalo(ctx, w * 0.29, h * 0.55, 22, "#5EEAD4", t);
+      drawFocusHalo(ctx, w * 0.48, h * 0.53, 22, "#38BDF8", t);
+      drawFocusHalo(ctx, w * 0.67, h * 0.45, 24, "#F87171", t * 1.2);
+    } else {
+      drawShockRings(ctx, w * 0.48, h * 0.53, 26, "#7DD3FC", 2, t);
+      drawOrbitPath(ctx, w * 0.67, h * 0.45, 20, 8, "#FBBF24", t, 2.8, true);
+    }
+  }
       },
-
-      "p4-abrasion-fluoride-pyro": {
-        imgSrc: "src/assets/images/root_abrasion_fluoride_pyro_1795585005858.jpg",
-        duration: 8,
-        scenarios: [
+      "p4-abrasion-fluoride-pyro":       {
+        "imgSrc": "src/assets/images/p4t2_f1_root_notching_1795610829128.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. تآكل الجذر المكشوف (العاج 25x والملاط 35x أسرع من المينا)",
-            activePart: "root",
-            focus: { cx: 52, cy: 52, scale: 1.32 },
-            seeIq: "شوف حفر الجذر المكشوف بنص الصورة: المينا تتأثر قليل بس العاج يتآكل أسرع بـ 25 مرة والملاط أسرع بـ 35 مرة فينحفر الجذر ويسبب حساسية أسنان",
-            whyIq: "سلايد 36 يحذر من استخدام معاجين شديدة الكشط لدى مرضى الجذور المكشوفة لأن العاج والملاط أضعف بكثير من المينا",
-            tipIq: "Slide 36: Dentin 25x faster · Cementum 35x faster than enamel -> Notching & Sensitivity"
+            "label": "1. تآكل الجذر المكشوف: العاج 25 ضعف والملاط 35 ضعف أسرع",
+            "activePart": "exposed_root",
+            "focus": {
+              "cx": 48,
+              "cy": 56,
+              "scale": 1.22
+            },
+            "seeIq": "شوف الجذور المكشوفة والمنخورة أفقياً بالضرس والضاحك لأن العاج يتآكل 25 مرة والملاط 35 مرة أسرع من المينا الصلب",
+            "whyIq": "سلايد 36 يحذر من اختيار معاجين عالية الكشط للأسنان ذات الجذور المكشوفة منعاً لحدوث حفر العنقي وحساسية الأسنان",
+            "tipIq": "Slide 36 Speed Ratio: Dentin 25x faster & Cementum 35x faster than enamel -> Notching & Sensitivity"
           },
           {
-            label: "2. الفلوريد (1000–1100 ppm) vs البايروفوسفات (30%+ قلح جديد فوق اللثة)",
-            activePart: "pyro",
-            focus: { cx: 74, cy: 48, scale: 1.28 },
-            seeIq: "باوع المربعين عاليمين: فوك الفلوريد بتركيز 1000–1100 ppm يحمي المينا من التسوس وجوّه البايروفوسفات تمنع 30%+ من القلح الجديد فوق اللثة بس ما تشيل القديم",
-            whyIq: "سلايد 37 و 38 يفرقون بين توصيل الفلوريد لمنع التسوس وحدود معاجين مضادات القلح الـ Pyrophosphates",
-            tipIq: "Fluoride 1000–1100 ppm · Pyrophosphates: -30%+ new supragingival ONLY (no effect on subgingival/inflammation/existing)"
+            "label": "2. القلح فوق اللثوي اللساني: هدف معاجين البايروفوسفات",
+            "activePart": "cej_margin",
+            "focus": {
+              "cx": 46,
+              "cy": 54,
+              "scale": 1.2
+            },
+            "seeIq": "شوف بالمرآة على السطح اللساني للقواطع السفلية طبقات قلح صفراء متصلبة فوق اللثة مع تهيج ونزف الحافة",
+            "whyIq": "سلايد 38 و 37: معاجين البايروفوسفات تقلل تكون القلح الجديد فوق اللثة 30%+ لكنها لا تزيل القديم ولا تمنع تحت اللثوي والفلوريد بتركيز 1000–1100 ppm يحمي المينا",
+            "tipIq": "Pyrophosphates reduce 30%+ new SUPRAGINGIVAL calculus ONLY · Fluoride: 1000–1100 ppm caries cut"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p4t2_xray_calculus_1795614767584.jpg",
+            "activePart": "supragingival_calc",
+            "focus": {
+              "cx": 48,
+              "cy": 56,
+              "scale": 1.16
+            },
+            "seeIq": "الأشعة السينية تبين ترسبات القلح المتكلسة على الجوانب العنقية بشكل نتوءات بيضاء متفرعة بينما القلح القديم هذا ما ينزال بالمعجون بل بالـ Scaling",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر نتوءات القلح المتكلس ومستوى العظم السنخي",
+            "tipIq": "Mineralized calculus requires mechanical scaling · Pyrophosphates only slow new supragingival formation"
           }
         ],
-        parts: [
-          { key: "root", en: "Exposed Root Notching (Dentin 25x / Cementum 35x)", ar: "حفر الجذر المكشوف (25x عاج و 35x ملاط)", posPct: [56, 58], iq: "يتآكل العاج 25 مرة والملاط 35 مرة أسرع من المينا فينحفر العنق وتظهر حساسية", clinical: "Slide 36 Speed Ratios" },
-          { key: "fluoride", en: "Fluoride Ions (1000–1100 ppm)", ar: "أيونات الفلوريد (1000–1100 ppm)", posPct: [80, 26], iq: "التركيز اللازم لتقليل تسوس الأسنان عند توصيله بالمعجون", clinical: "Slide 37 Caries Reduction" },
-          { key: "pyro", en: "Pyrophosphates (≥30% New Supragingival)", ar: "البايروفوسفات (30%+ قلح جديد فوق اللثة)", posPct: [80, 68], iq: "تمنع القلح الجديد فوق اللثة فقط ولا تؤثر على تحت اللثوي ولا الالتهاب ولا القلح القديم", clinical: "Slide 38 Calculus Control" }
-        ],
+        "parts": [
+          {
+            "key": "exposed_root",
+            "en": "Exposed Root Dentin (25x) & Cementum (35x)",
+            "ar": "انحفار العاج (25x) والملاط (35x)",
+            "posPct": [
+              40,
+              56
+            ],
+            "iq": "تآكل سريع جداً بالأنسجة الجذرية المكشوفة يسبب حساسية مؤلمة أمام الهواء والبارد",
+            "clinical": "Avoid high-abrasive pastes on recession"
+          },
+          {
+            "key": "cej_margin",
+            "en": "Cementoenamel Junction & Fluoride Target",
+            "ar": "عنقيات المينا وحماية الفلوريد",
+            "posPct": [
+              68,
+              61
+            ],
+            "iq": "تحتاج المينا والأعناق لإمداد فلوريد بتركيز 1000–1100 ppm للوقاية الفعالة من النخر",
+            "clinical": "Slide 37 Optimal Fluoride Concentration"
+          },
+          {
+            "key": "supragingival_calc",
+            "en": "Supragingival Calculus (Pyrophosphate Target)",
+            "ar": "القلح فوق اللثوي (هدف البايروفوسفات)",
+            "posPct": [
+              52,
+              68
+            ],
+            "iq": "البايروفوسفات تقلل القلح الجديد فوق اللثوي ≥30% فقط دون إزالة القديم أو تحت اللثوي",
+            "clinical": "Slide 38 Anti-calculus limits"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawShockRings(ctx, w * 0.56, h * 0.58, 30, "#EF4444", 3, t * 1.2);
-          } else {
-            drawFocusHalo(ctx, w * 0.80, h * 0.26, 26, "#10B981", t);
-            drawFocusHalo(ctx, w * 0.80, h * 0.68, 26, "#38BDF8", t * 1.2);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFlowTrack(ctx, w * 0.34, h * 0.56, w * 0.46, h * 0.56, "#F87171", 2.3, t, true);
+      drawFocusHalo(ctx, w * 0.68, h * 0.61, 20, "#38BDF8", t);
+    } else if(st.scIdx === 1){
+      drawFocusHalo(ctx, w * 0.52, h * 0.68, 24, "#FBBF24", t);
+      drawMotionArrow(ctx, w * 0.68, h * 0.54, w * 0.68, h * 0.61, "#5EEAD4", 2.1);
+    } else {
+      drawFocusHalo(ctx, w * 0.43, h * 0.65, 20, "#FBBF24", t);
+      drawFocusHalo(ctx, w * 0.57, h * 0.64, 20, "#38BDF8", t);
+    }
+  }
       },
-
-      "p5-bass-45deg": {
-        imgSrc: "src/assets/images/bass_technique_45deg_1795585006757.jpg",
-        duration: 8,
-        scenarios: [
+      "p5-bass-45deg":       {
+        "imgSrc": "src/assets/images/p5t1_f1_bass_buccal_1795610827513.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. زاوية Bass الـ 45 درجة والدخول الطفيف جوا اللثة (Target Hygiene)",
-            activePart: "angle45",
-            focus: { cx: 46, cy: 50, scale: 1.40 },
-            seeIq: "شوف المقطع التشريحي: شعيرات الفرشة الناعمة مائلة بزاوية 45 درجة مع محور السن الطولي وطرفها فايت شوية جوا حافة اللثة (Slight subgingival) على ملتقى السن باللثة",
-            whyIq: "سلايدات 42–46 و 48: الـ Dentogingival junction هي هدف الـ Target hygiene لمنع التسوس وأمراض اللثة سوية",
-            tipIq: "Bass Method: Most recommended · 45° angle · Slight subgingival penetration · Target hygiene at DGJ"
+            "label": "1. طريقة Bass الشدقية الخلفية: زاوية 45 درجة واهتزاز لطيف",
+            "activePart": "angle45",
+            "focus": {
+              "cx": 52,
+              "cy": 54,
+              "scale": 1.2
+            },
+            "seeIq": "شوف الشعيرات الناعمة مايلة بزاوية 45 درجة ويا محور السن وطرفها فايت برفق شوية جوا حافة اللثة (Slight subgingival) على ملتقى السن باللثة",
+            "whyIq": "سلايد 42 و 43: طريقة Bass هي الأكثر توصية لأن الـ Dentogingival junction هو هدف الـ Target hygiene ضد التسوس وأمراض اللثة",
+            "tipIq": "Bass Method: 45° angle · Slight subgingival · Controlled vibrating back-and-forth motion"
           },
           {
-            label: "2. الاهتزاز المسيطر عليه والبدء من أبعد ضرس خلفي (Most Distal Tooth)",
-            activePart: "sulcus",
-            focus: { cx: 44, cy: 52, scale: 1.32 },
-            seeIq: "حركة الشعيرات تكون اهتزاز ذهاب وإياب لطيف ومسيطر عليه بدون دعك عنيف ونبدأ بالتسلسل من أبعد ضرس خلفي بكل قوس للفكين",
-            whyIq: "الاهتزاز المسيطر يفكك البلاك فوق وتحت اللثة بدون رض والبدء من الخلف يضمن عدم نسيان أي سن",
-            tipIq: "Controlled vibrating back-and-forth motion · Start at most distal tooth systematically in both arches"
+            "label": "2. طريقة Bass اللسانية: نفس الزاوية بدءاً من أبعد ضرس خلفي",
+            "activePart": "sulcus_dgj",
+            "focus": {
+              "cx": 54,
+              "cy": 56,
+              "scale": 1.18
+            },
+            "seeIq": "بالجهة اللسانية السفلية نفس المبدأ: نبدي بالتسلسل من أبعد ضرس خلفي بزاوية 45 درجة نحو حافة اللثة اللسانية بدون نسيان أي سن",
+            "whyIq": "سلايدات 44–46 تشدد على التسلسل المنظم من أبعد ضرس خلفي بكل قوس مع حركة اهتزاز مسيطر عليها بدون دعك أفقي عنيف",
+            "tipIq": "Start at most distal tooth in both arches · Target hygiene along buccal & lingual DGJ"
           }
         ],
-        parts: [
-          { key: "angle45", en: "45° Bristle Angulation (Bass Method)", ar: "زاوية 45 درجة للشعيرات (تقنية Bass)", posPct: [38, 51], iq: "ميلان الشعيرات حوالي 45 درجة مع المحور الطولي للسن باتجاه حافة اللثة", clinical: "Most recommended method (Slide 43)" },
-          { key: "sulcus", en: "Slight Subgingival & Target Hygiene (DGJ)", ar: "دخول طفيف جوا اللثة (Target Hygiene)", posPct: [45, 42], iq: "تنظف البلاك عند ملتقى السن باللثة لمنع التسوس واللثة مع بدء من أبعد ضرس خلفي", clinical: "Dentogingival junction (Slide 42)" }
-        ],
+        "parts": [
+          {
+            "key": "angle45",
+            "en": "45° Bristle Angulation to Long Axis",
+            "ar": "ميلان الشعيرات بزاوية 45 درجة",
+            "posPct": [
+              55,
+              36
+            ],
+            "iq": "تُوجه الشعيرات نحو حافة اللثة بزاوية 45 درجة لتتلامس بدقة مع مدخل الأخدود اللثوي",
+            "clinical": "Most widely recommended brushing method (Slide 43)"
+          },
+          {
+            "key": "sulcus_dgj",
+            "en": "Slight Subgingival Entry (DGJ Target)",
+            "ar": "الدخول اللطيف تحت اللثة (Target Hygiene)",
+            "posPct": [
+              50,
+              61
+            ],
+            "iq": "اهتزاز مسيطر عليه ذهاباً وإياباً ينظف ملتقى السن باللثة لمنع النخر وأمراض اللثة معاً",
+            "clinical": "Controlled short vibratory strokes (No harsh scrub)"
+          },
+          {
+            "key": "distal_start",
+            "en": "Most Distal Molar Systematic Start",
+            "ar": "البداية المنتظمة من أبعد ضرس خلفي",
+            "posPct": [
+              22,
+              46
+            ],
+            "iq": "يبدأ التسلسل دائماً من أقصى ضرس خلفي ويمتد تدريجياً حول القوس لضمان عدم إهمال أي سطح",
+            "clinical": "Systematic buccal & lingual arch coverage"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          drawFlowTrack(ctx, w * 0.36, h * 0.51, w * 0.45, h * 0.42, "#10B981", 2.3, t, true);
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.45, h * 0.42, 22, "#FCD34D", t);
-          } else {
-            drawOrbitPath(ctx, w * 0.45, h * 0.42, 16, 4, "#38BDF8", t, 6, true);
-          }
-        }
+    // 45-degree angulation line & vibratory short stroke into gingival sulcus
+    drawMotionArrow(ctx, w * 0.59, h * 0.32, w * 0.50, h * 0.59, "#5EEAD4", 2.5);
+    drawOrbitPath(ctx, w * 0.50, h * 0.61, 20, 6, "#FDE68A", t, 3.6, true);
+    if(st.scIdx === 1){
+      drawFlowTrack(ctx, w * 0.22, h * 0.46, w * 0.55, h * 0.46, "#38BDF8", 2.1, t, false);
+    }
+  }
       },
-
-      "p5-powered-interdental-need": {
-        imgSrc: "src/assets/images/powered_position_interproximal_1795585005986.jpg",
-        duration: 8,
-        scenarios: [
+      "p5-powered-interdental-need":       {
+        "imgSrc": "src/assets/images/p5t2_f1_powered_margin_1795610826027.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. وضعية الفرشة الكهربائية (رأس عدل ومدور عند حافة اللثة بلا تقنية خاصة)",
-            activePart: "straight",
-            focus: { cx: 26, cy: 50, scale: 1.38 },
-            seeIq: "باوع اليسار: سواء كان راس الفرشة الكهربائية مستطيل عدل (Sonic) أو مدور (Round) المريض بس يحطه يم حافة اللثة لأن الحركة جاهزة جوا الفرشة",
-            whyIq: "سلايدات 47 و 49 تؤكد إن توجيه الشعيرات لحافة اللثة هو الأهم دون الحاجة لحركات يدوية معقدة",
-            tipIq: "Powered brushing: No special technique needed · Place straight or round head at gingival margin"
+            "label": "1. توجيه رأس الفرشاة مباشرة لحافة اللثة (بلا تقنية يدوية خاصة)",
+            "activePart": "margin_place",
+            "focus": {
+              "cx": 56,
+              "cy": 54,
+              "scale": 1.2
+            },
+            "seeIq": "شوف شلون بالفرشاة الكهربائية أو الرؤوس المستقيمة/المدورة ماكو داعي لتعقيد اليد بس نحط الشعيرات مستقيمة يم حافة اللثة",
+            "whyIq": "سلايد 47 و 49: أهم شيء توجيه الشعيرات لحافة اللثة وترك آلية الفرشاة تؤدي الاهتزاز دون حركات معقدة",
+            "tipIq": "Powered brushing: No special technique required · Just position head squarely at gingival margin"
           },
           {
-            label: "2. عجز كل الفراشي عن التنظيف الكامل بين الأسنان (منشأ الأمراض)",
-            activePart: "gap",
-            focus: { cx: 74, cy: 54, scale: 1.38 },
-            seeIq: "شوف اليمين: الفرشة وصلت فوگ السن بس البلاك الأصفر المخفي بين الأسنان ظل موجود لأن أي فرشة ما تنظفه 100% ومن هنا تبدأ أغلب الأمراض",
-            whyIq: "سلايد 50 يعطي القاعدة الأساسية للانتقال لأدوات ما بين الأسنان لدى جميع المرضى",
-            tipIq: "Slide 50: No toothbrush completely removes interdental plaque · Most dental/perio diseases start interproximally"
+            "label": "2. ثبوت وجود البلاك البيني بالصبغة رغم نظافة السطح الخارجي",
+            "activePart": "occlusal_gap",
+            "focus": {
+              "cx": 48,
+              "cy": 48,
+              "scale": 1.22
+            },
+            "seeIq": "باوع عالصورة بعد التفريش والصبغة: السطوح الطاحنة نظيفة بس المناطق بين الأسنان ظلت حمراء فاقعة بالبلاك المخفي",
+            "whyIq": "سلايد 50: لا توجد أي فرشاة أسنان قادرة وحدها على إزالة البلاك البيني 100% ومن هنا تبدأ معظم أمراض الأسنان واللثة",
+            "tipIq": "Slide 50 Golden Rule: NO toothbrush completely removes interdental plaque -> Interdental aids mandatory"
           }
         ],
-        parts: [
-          { key: "straight", en: "Sonic Straight & Round Heads at Margin", ar: "الرأس المستقيم والمدور عند حافة اللثة", posPct: [20, 52], iq: "يوضع رأس الفرشة الكهربائية مباشرة عند حافة اللثة بدون تقنية يدوية إضافية", clinical: "Slides 47 & 49 (Fig 50.8)" },
-          { key: "gap", en: "Sheltered Interproximal Plaque Biofilm", ar: "البلاك المخفي بين الأسنان", posPct: [75, 62], iq: "لا تستطيع أي فرشاة إزالته بالكامل وتنشأ فيه معظم أمراض الأسنان واللثة", clinical: "Slide 50 Interdental Need" }
-        ],
+        "parts": [
+          {
+            "key": "margin_place",
+            "en": "Margin Placement Without Special Technique",
+            "ar": "التوجيه المباشر عند حافة اللثة",
+            "posPct": [
+              66,
+              47
+            ],
+            "iq": "تُثبت شعيرات الرأس الدوار أو المستقيم بملامسة لطيفة لحافة اللثة لتفكيك البلاك السطحي",
+            "clinical": "Slides 47 & 49 (Fig 50.8)"
+          },
+          {
+            "key": "occlusal_gap",
+            "en": "Cleansed Buccal & Occlusal Enamel",
+            "ar": "نظافة السطوح الظاهرة بعد التفريش",
+            "posPct": [
+              46,
+              54
+            ],
+            "iq": "تزول طبقة البلاك عن السطوح الخدية والإطباقية لكن هذا لا يكفي لحماية اللثة بين الأسنان",
+            "clinical": "Illusion of clean mouth without disclosing"
+          },
+          {
+            "key": "interdental_leftover",
+            "en": "Residual Sheltered Interproximal Biofilm",
+            "ar": "البلاك المتبقي المخفي بين الأسنان",
+            "posPct": [
+              51,
+              61
+            ],
+            "iq": "بؤرة بداية التسوس الجانبي والتهاب دواعم السن التي تعجز جميع الفراشي عن بلوغها بالكامل",
+            "clinical": "Slide 50 Bridge to Interdental Aids"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFocusHalo(ctx, w * 0.20, h * 0.52, 22, "#38BDF8", t);
-            drawOrbitPath(ctx, w * 0.39, h * 0.54, 18, 18, "#FCD34D", t, 6, false);
-          } else {
-            drawShockRings(ctx, w * 0.75, h * 0.62, 28, "#EF4444", 3, t * 1.2);
-          }
-        }
+    if(st.scIdx === 0){
+      drawOrbitPath(ctx, w * 0.66, h * 0.47, 16, 16, "#38BDF8", t, 3.2, false);
+      drawFocusHalo(ctx, w * 0.46, h * 0.54, 20, "#5EEAD4", t);
+    } else {
+      drawFocusHalo(ctx, w * 0.51, h * 0.61, 26, "#F87171", t * 1.2);
+      drawMotionArrow(ctx, w * 0.51, h * 0.48, w * 0.51, h * 0.58, "#FBBF24", 2.2);
+    }
+  }
       },
-
-      "p6-concavity-five-aids": {
-        imgSrc: "src/assets/images/interdental_aids_concavity_1795585008092.jpg",
-        duration: 8,
-        scenarios: [
+      "p6-concavity-five-aids":       {
+        "imgSrc": "src/assets/images/p6t1_f1_five_aids_tray_1795610887215.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. فشل الخيط فوق التقعر الجذري vs دخول الفرشاة البينية (سلايد 51)",
-            activePart: "brush",
-            focus: { cx: 32, cy: 40, scale: 1.36 },
-            seeIq: "قارن بلوحة اليسار: الخيط يمشي مشدود فوك الحفرة المقعرة للجذر ويترك البلاك الأصفر جواها بينما شعيرات الفرشاة البينية الصفراء تنفرش وتنظف الحفرة كاملة",
-            whyIq: "سلايد 51 و 52 يثبتان إن الهدف إزالة البلاك مو الأكل المحشور وإن الخيط ما يوصل للـ root concavities والـ furcations",
-            tipIq: "Slide 51: Remove biofilm not just food · Dental floss does NOT reach concave root surfaces"
+            "label": "1. الأدوات الخمسة الشائعة لتنظيف ما بين الأسنان",
+            "activePart": "aids_floss_brush",
+            "focus": {
+              "cx": 48,
+              "cy": 50,
+              "scale": 1.16
+            },
+            "seeIq": "عالصينية السريرية مرتبة الأدوات الـ 5 الأساسية: خيط الأسنان والفراشي البينية بأحجامها والمحفز المطاطي والعود الخشبي ورأس الخيط المائي",
+            "whyIq": "سلايد 53 و 56: نختار الأداة للمريض وفق 4 معايير تشمل حجم الفراغ البيني والتقعرات والاصطفاف والتقويم أو التركيبات وتعاون المريض",
+            "tipIq": "5 Aids: Floss · Interdental brushes · Rubber tip · Wooden/plastic tip · Water flosser (4 selection factors)"
           },
           {
-            label: "2. الأدوات الخمسة الشائعة ومعايير الاختيار الأربعة (سلايدات 53 و 56)",
-            activePart: "five",
-            focus: { cx: 80, cy: 50, scale: 1.30 },
-            seeIq: "بالعمود اليمين تشوف الأدوات الـ 5 من فوق لجوه: خيط الأسنان والفرشاة البينية والرأس المطاطي والعود الخشبي وفوهة الخيط المائي ونختارها حسب 4 معايير",
-            whyIq: "اختيار الأداة يعتمد على حجم الفراغ والتقعرات والاصطفاف والتقويم أو الجسور وسهولة الاستخدام وتعاون المريض",
-            tipIq: "5 Aids: Floss, Interdental brush, Rubber tip, Wooden/plastic tip, Water flosser"
+            "label": "2. انتشار شعيرات الفرشاة البينية داخل تقعر الجذر المفتوح",
+            "activePart": "concavity_brush",
+            "focus": {
+              "cx": 48,
+              "cy": 48,
+              "scale": 1.22
+            },
+            "seeIq": "باوع شلون الخيط المشدود يعبر جسر فوق الحفرة المقعرة للجذر بينما الفرشاة البينية تنفرش شعيراتها جوا التقعر وتمسح البلاك كامل",
+            "whyIq": "سلايد 51 و 52: هدفنا إزالة البلاك الحيوي مو الأكل المحشور فقط ولذلك الخيط يفشل بتنظيف سطوح الجذور المقعرة والفوركيشن",
+            "tipIq": "Slide 51: Floss does NOT clean concave root surfaces · Interdental brush conforms to concavities"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p6t1_xray_premolar_1795614768560.jpg",
+            "activePart": "adjunct_aids",
+            "focus": {
+              "cx": 50,
+              "cy": 50,
+              "scale": 1.15
+            },
+            "seeIq": "شوف بالأشعة الجذور المتشعبة للضاحك الأول العلوي وتخصر عنقه الإنسي الجاي للداخل تحت المينا مقارنة بظل الجيب الفكي فوك",
+            "whyIq": "صورة شعاعية تعليمية مولّدة للضاحك الأول العلوي وتقعر الجذر الإنسي وقاع الجيب الفكي",
+            "tipIq": "Maxillary 1st premolar mesial cervical concavity + bifurcated roots -> Floss bridges over / ID brush cleans"
           }
         ],
-        parts: [
-          { key: "floss", en: "Floss Bridging Concave Root (A)", ar: "جسر الخيط فوق تقعر الجذر", posPct: [14, 39], iq: "يمر مشدوداً فوق التقعر ولا يلامس البلاك المختبئ داخله", clinical: "Cannot clean concavities (Slide 51)" },
-          { key: "brush", en: "Interdental Brush Filling Concavity (B)", ar: "الفرشاة البينية داخل التقعر", posPct: [37, 45], iq: "تنتشر شعيراتها داخل الفراغات المفتوحة والتقعرات الجذرية وتزيل البلاك", clinical: "Ideal for open spaces/furcations" },
-          { key: "five", en: "5 Common Interdental Aids", ar: "الأدوات الخمسة الشائعة", posPct: [84, 54], iq: "تُختار بناءً على حجم الفراغ والتشريح والتقويم أو التركيبات وتعاون المريض", clinical: "Slides 53–56" }
-        ],
+        "parts": [
+          {
+            "key": "aids_floss_brush",
+            "en": "Dental Floss & Tight Embrasure Envelope",
+            "ar": "خيط الأسنان والفراغ المغلق الضيق",
+            "posPct": [
+              23,
+              52
+            ],
+            "iq": "يقتصر دوره على الفراغات الضيقة السليمة ولا يستطيع الالتفاف داخل التقعرات العميقة",
+            "clinical": "Limitation explained on Slide 51"
+          },
+          {
+            "key": "concavity_brush",
+            "en": "Interdental Brush Flaring Into Concavity",
+            "ar": "انفراش شعيرات الفرشاة البينية بالتقعر",
+            "posPct": [
+              47,
+              50
+            ],
+            "iq": "تضغط شعيراتها المرنة داخل تقعر الجذر وجوانب الأسنان لإزالة الغشاء الحيوي لا بقايا الطعام فحسب",
+            "clinical": "Recommended over floss in open embrasures"
+          },
+          {
+            "key": "adjunct_aids",
+            "en": "Concave Root Surface & Adjunct Tips",
+            "ar": "السطح الجذري المقعر والأدوات المساعدة",
+            "posPct": [
+              71,
+              52
+            ],
+            "iq": "تُستخدم المحفزات المطاطية والأعواد المثلثة والخيط المائي وفق خصائص كل مريض الأربعة",
+            "clinical": "Slides 53 & 56 Selection criteria"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawShockRings(ctx, w * 0.14, h * 0.39, 20, "#EF4444", 2, t * 1.1);
-            drawFocusHalo(ctx, w * 0.37, h * 0.45, 24, "#10B981", t);
-          } else {
-            drawFlowTrack(ctx, w * 0.84, h * 0.16, w * 0.84, h * 0.84, "#38BDF8", 2.1, t, true);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFocusHalo(ctx, w * 0.23, h * 0.52, 22, "#38BDF8", t);
+      drawFocusHalo(ctx, w * 0.47, h * 0.50, 22, "#5EEAD4", t);
+      drawFocusHalo(ctx, w * 0.71, h * 0.52, 22, "#FBBF24", t);
+    } else if(st.scIdx === 1){
+      drawFlowTrack(ctx, w * 0.39, h * 0.50, w * 0.56, h * 0.50, "#5EEAD4", 2.3, t, true);
+      drawFocusHalo(ctx, w * 0.47, h * 0.50, 26, "#FDE68A", t);
+    } else {
+      drawFocusHalo(ctx, w * 0.44, h * 0.58, 22, "#FDE68A", t);
+      drawFocusHalo(ctx, w * 0.50, h * 0.24, 22, "#38BDF8", t);
+    }
+  }
       },
-
-      "p6-floss-powered-flosser": {
-        imgSrc: "src/assets/images/dental_floss_powered_flosser_1795585086897.jpg",
-        duration: 8,
-        scenarios: [
+      "p6-floss-powered-flosser":       {
+        "imgSrc": "src/assets/images/p6t2_f1_floss_cshape_1795610781137.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. طريقة الخيط الصحيحة (تحت نقطة التلامس وعلى شكل C بضربات صعود ونزول)",
-            activePart: "cshape",
-            focus: { cx: 25, cy: 48, scale: 1.36 },
-            seeIq: "شوف اليسار: الخيط ينزل برفق بين الأسنان تحت نقطة التلامس ويلف عالسن بحرف C مع ضربات صاعدة نازلة (وتتكرر لـ distal #8) بس تذكر الالتزام بيه بس 32%",
-            whyIq: "سلايد 58 و 59: إرشادات 2020 تمنع جعله الخيار الأول لـ periodontitis وفي دراسة Kotsakis جاء بالأخير مع الأعواد الخشبية",
-            tipIq: "32% compliance · NOT 1st choice in periodontitis · Kotsakis: Brushes & Water flossers top vs Floss & Toothpicks last"
+            "label": "1. طريقة الخيط اليدوي: العبور تحت التلامس واللف بحرف C",
+            "activePart": "cshape_wrap",
+            "focus": {
+              "cx": 55,
+              "cy": 45,
+              "scale": 1.22
+            },
+            "seeIq": "شوف الخيط شلون يعبر بلطف تحت نقطة التلامس ويلتف بحرف C حول عنق السن مع حركة صعود ونزول بس تذكر الالتزام بالخيط بس 32%",
+            "whyIq": "سلايد 58 و 59 و Kotsakis: إرشادات 2020 تمنع جعله الخيار الأول لـ Periodontitis لأن الفرشاة البينية والخيط المائي تفوقوا عليه",
+            "tipIq": "32% compliance · NOT 1st choice in periodontitis · Wrap in C-shape down into sulcus & repeat on distal #8"
           },
           {
-            label: "2. الخيط الكهربائي Powered Flosser (حركة دائرية أسهل بس مو أحسن من الأصابع)",
-            activePart: "wand",
-            focus: { cx: 74, cy: 48, scale: 1.36 },
-            seeIq: "شوف اليمين: يدخل رأس الخيط الكهربائي بين الأسنان وتطلع عصا/شعيرة تتحرك بحركة دائرية (Circular motion) وتكون أسهل للبعض بس ما تغلب خيط الأصابع بالإزالة",
-            whyIq: "سلايد 60 يوضح إنه آمن وفعال ومريح لكنه لا يتفوق على مسك الخيط بالأصابع بإزالة البلاك",
-            tipIq: "Powered Flosser (Slide 60): Safe & effective · Circular motion · Easier for some · NOT better than finger floss"
+            "label": "2. الخيط الكهربائي Powered Flosser: آمن وسهل الحركة الدائرية",
+            "activePart": "contact_pass",
+            "focus": {
+              "cx": 48,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "عصا الخيط الكهربائي تدخل الحيز البيني بحركة دائرية مريحة للبعض ومثبت أمانها لكنها علمياً ما تتفوق على خيط الأصابع بالإزالة",
+            "whyIq": "سلايد 60: الفعالية متساوية مع خيط الأصابع لكنها خيار عملي أسهل للمرضى اللي يتعبون من لف الخيط التقليدي",
+            "tipIq": "Slide 60: Powered flosser is safe & effective with circular motion · Easier for some · NOT better than finger floss"
           }
         ],
-        parts: [
-          { key: "cshape", en: "C-Shape Floss Below Contact (#7/#8)", ar: "لف الخيط تحت التلامس (#7 و #8)", posPct: [24, 48], iq: "يدخل تحت الـ contact point ويلف عالسطح الجانبي بحركات صعود ونزول وتكرر على distal #8", clinical: "Slide 59 Fig 50.18" },
-          { key: "wand", en: "Powered Flosser Circular Motion", ar: "حركة العصا الدائرية للخيط الكهربائي", posPct: [70, 38], iq: "تتحرك بحركة دائرية وآمنة وفعالة وأسهل للبعض لكنها ليست أفضل من خيط الأصابع", clinical: "Slide 60 Powered Flossing" }
-        ],
+        "parts": [
+          {
+            "key": "cshape_wrap",
+            "en": "C-Shape Adaptation Around Proximal Wall",
+            "ar": "التفاف الخيط بشكل حرف C على السن",
+            "posPct": [
+              56,
+              35
+            ],
+            "iq": "يعانق الجدار الجانبي للسن بحرف C مع ضربات صعود ونزول لطيفة نحو الأخدود بدون قطع الحليمة",
+            "clinical": "Remember to floss distal surface of terminal #8 tooth"
+          },
+          {
+            "key": "contact_pass",
+            "en": "Controlled Passage Below Contact Point",
+            "ar": "العبور المسيطر عليه تحت نقطة التلامس",
+            "posPct": [
+              62,
+              46
+            ],
+            "iq": "تجنب النقر المفاجئ فوق اللثة وحافظ على التوتر الجانبي حول الجذر",
+            "clinical": "2020 CPG: Not 1st choice in periodontitis patients"
+          },
+          {
+            "key": "powered_wand",
+            "en": "Finger Grip Tension & Powered Wand Tip",
+            "ar": "التحكم بالأصابع ورأس الخيط الكهربائي",
+            "posPct": [
+              38,
+              72
+            ],
+            "iq": "يوفر الرأس الكهربائي حركة دائرية أسهل لبعض المرضى لكنه مساوٍ وليس أفضل من مسك الأصابع",
+            "clinical": "Slide 60 Comparison"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.24, h * 0.36, w * 0.24, h * 0.56, "#10B981", 2.2, t, true);
-          } else {
-            drawOrbitPath(ctx, w * 0.70, h * 0.38, 18, 18, "#38BDF8", t, 6, false);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFlowTrack(ctx, w * 0.62, h * 0.42, w * 0.62, h * 0.56, "#38BDF8", 2.2, t, true);
+      drawOrbitPath(ctx, w * 0.56, h * 0.35, 16, 10, "#FDE68A", t, 2.4, false);
+    } else {
+      drawOrbitPath(ctx, w * 0.38, h * 0.72, 18, 18, "#5EEAD4", t, 3.0, false);
+    }
+  }
       },
-
-      "p7-superfloss-abc": {
-        imgSrc: "src/assets/images/superfloss_interdental_abc_1795585027455.jpg",
-        duration: 8,
-        scenarios: [
+      "p7-superfloss-abc":       {
+        "imgSrc": "src/assets/images/p7t1_f1_superfloss_ortho_1795610961672.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. مكونات Super Floss الثلاثة للتقويم والجسور والفراغات الواسعة",
-            activePart: "superfloss",
-            focus: { cx: 18, cy: 48, scale: 1.40 },
-            seeIq: "شوف العمود (1) باليسار: الطرف اليابس المقوى يفوت تحت سلك التقويم وبعده الخيط الإسفنجي ينظف الفراغ الواسع وبعده الخيط العادي ينظف حافة اللثة",
-            whyIq: "سلايد 61 و 62: تنظيف بين الأسنان أهم خطوة بعلاج اللثة (و 8% فقط من مراهقي بريطانيا يفلشون يومياً)",
-            tipIq: "Super Floss: Stiffened-end threader + Spongy floss + Regular floss -> Braces, bridges, wide gaps"
+            "label": "1. خيط Super Floss: الطرف المقوى والجزء الإسفنجي تحت سلك التقويم",
+            "activePart": "superfloss_wire",
+            "focus": {
+              "cx": 54,
+              "cy": 52,
+              "scale": 1.22
+            },
+            "seeIq": "شوف الطرف الأزرق اليابس شلون يعبر الخيط الإسفنجي جوا السلك المعدني للتقويم أو تحت الجسور بسهولة لتنظيف المناطق الواسعة",
+            "whyIq": "سلايد 61 و 62: التنظيف البيني أهم خطوة بالوقاية من التهاب اللثة رغم إن 8% فقط من مراهقي بريطانيا يفلشون يومياً",
+            "tipIq": "Super Floss (3 parts): Stiffened-end threader + Spongy floss + Regular floss -> Braces / Bridges / Wide spaces"
           },
           {
-            label: "2. مخطط الحالات الثلاث A (خيط) و B (فرشاة بينية) و C (أحادية الخصلة)",
-            activePart: "diagB",
-            focus: { cx: 66, cy: 52, scale: 1.32 },
-            seeIq: "شوف الأعمدة (2 و 3 و 4): A فراغ ضيق بلا انحسار (خيط) · B فراغ أكبر وجذر مكشوف مثل الإنسي للضاحك الأول العلوي (فرشاة بينية) · C ماكو حليمة لثوية أصلاً (أحادية الخصلة)",
-            whyIq: "سلايدات 63–65 وإرشادات 2020 لعلاج stage I–III periodontitis تثبت تفوق الفرشاة البينية عالخيط بمرضى المتابعة",
-            tipIq: "A: Floss (no recession) · B: Interproximal brush (exposed root) · C: Single-tufted (no papillae)"
+            "label": "2. مخطط B سريرياً: نقاط تلامس محفوظة مع فراغات بينية مفتوحة وانحسار",
+            "activePart": "embrasure_root",
+            "focus": {
+              "cx": 54,
+              "cy": 44,
+              "scale": 1.2
+            },
+            "seeIq": "باوع الأسنان متلامسة من الحافة القاطعة لكن اللثة منسحبة وتركت مثلثات مفتوحة مكشوفة الجذر بين الأسنان (الحالة B و C)",
+            "whyIq": "سلايدات 63–65: الحالة A (فراغ ضيق) للخيط أما الحالة B (جذر مكشوف ومثلث مفتوح مثل المريض المعالج) فالفرشاة البينية هي الأفضل",
+            "tipIq": "A: Floss (tight / no recession) · B: Interproximal brush (Stage I–III open space) · C: Single-tufted (no papillae)"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p2t1_xray_boneloss_1795614766594.jpg",
+            "activePart": "papilla_recession",
+            "focus": {
+              "cx": 48,
+              "cy": 46,
+              "scale": 1.16
+            },
+            "seeIq": "الأشعة تفسر سبب تشكل المثلثات المفتوحة بالحالة B: نزول العظم السنخي أپيكلياً كشف جذور الضواحك والأضراس وصار الحيز البيني واسع",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر اتساع المسافة العنقية ونزول العظم المرافق لفتح الفراغات البينية",
+            "tipIq": "Radiographic bone recession creates wide interproximal embrasures where interdental brushes outperform floss"
           }
         ],
-        parts: [
-          { key: "superfloss", en: "Super Floss (Threader + Spongy + Regular)", ar: "خيط السوبر فلوس الثلاثي", posPct: [17, 50], iq: "مصمم للتقويم والجسور والفراغات الواسعة بمكوناته الثلاثة المتكاملة", clinical: "Slide 62 & 8% UK Teens (Slide 61)" },
-          { key: "diagB", en: "Diagram B: Interproximal Brush (Exposed Root)", ar: "الحالة B: فرشاة بينية للجذر المكشوف", posPct: [65, 56], iq: "مفضلة بتقعر السطح الإنسي للضاحك الأول العلوي وعند عدم ملء الحليمة للفراغ (Stage I–III)", clinical: "Slides 63–65" },
-          { key: "diagC", en: "Diagram C: Single-Tufted (No Papillae)", ar: "الحالة C: أحادية الخصلة عند فقدان الحليمة", posPct: [88, 56], iq: "تنظف بكفاءة عالية في الفراغات البينية الخالية من الحليمة اللثوية", clinical: "Slide 64 Diagram C" }
-        ],
+        "parts": [
+          {
+            "key": "superfloss_wire",
+            "en": "Super Floss Threader & Spongy Segment",
+            "ar": "طرف التمرير المقوى والجزء الإسفنجي",
+            "posPct": [
+              56,
+              58
+            ],
+            "iq": "يمرر السوبر فلوس بسهولة تحت أسلاك التقويم الثابت وتحت دمى الجسور ومع نقاط التلامس العلوية",
+            "clinical": "Only 8% of UK teens floss daily (Slide 61)"
+          },
+          {
+            "key": "embrasure_root",
+            "en": "Open Gingival Embrasure (Diagram B Indication)",
+            "ar": "الفراغ البيني المفتوح (استطباب الحالة B)",
+            "posPct": [
+              47,
+              41
+            ],
+            "iq": "عندما لا تملأ الحليمة الفراغ البيني وتنكشف الجذور تتفوق الفرشاة البينية على الخيط بمرضى المتابعة",
+            "clinical": "2020 CPG Stage I–III Periodontitis"
+          },
+          {
+            "key": "papilla_recession",
+            "en": "Receded Interdental Papilla Transition (B -> C)",
+            "ar": "انحسار الحليمة اللثوية (انتقال B إلى C)",
+            "posPct": [
+              45,
+              36
+            ],
+            "iq": "كلما اختفت الحليمة البينية واتسعت المسافة العنقية ننتقل من الفرشاة البينية للفرشاة أحادية الخصلة C",
+            "clinical": "Slides 63–65 Morphological matching"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.17, h * 0.36, w * 0.17, h * 0.66, "#38BDF8", 2.3, t, true);
-          } else {
-            drawFocusHalo(ctx, w * 0.41, h * 0.46, 18, "#7DD3FC", t);
-            drawFocusHalo(ctx, w * 0.65, h * 0.56, 22, "#10B981", t * 1.1);
-            drawFocusHalo(ctx, w * 0.88, h * 0.56, 22, "#F59E0B", t * 1.2);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFlowTrack(ctx, w * 0.42, h * 0.58, w * 0.68, h * 0.58, "#38BDF8", 2.3, t, true);
+    } else if(st.scIdx === 1){
+      drawFocusHalo(ctx, w * 0.47, h * 0.41, 24, "#FBBF24", t);
+      drawMotionArrow(ctx, w * 0.45, h * 0.30, w * 0.45, h * 0.40, "#F87171", 2.1);
+    } else {
+      drawFlowTrack(ctx, w * 0.30, h * 0.45, w * 0.72, h * 0.45, "#FBBF24", 2.2, t, false);
+      drawFocusHalo(ctx, w * 0.44, h * 0.38, 22, "#5EEAD4", t);
+    }
+  }
       },
-
-      "p7-brush-tuft-toothpick": {
-        imgSrc: "src/assets/images/interdental_brush_tuft_wood_1795585009889.jpg",
-        duration: 8,
-        scenarios: [
+      "p7-brush-tuft-toothpick":       {
+        "imgSrc": "src/assets/images/p7t2_f1_id_brush_fit_1795610828339.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. قطر الفرشاة البينية (أكبر قليلاً من الفراغ) + أحادية الخصلة",
-            activePart: "oversized",
-            focus: { cx: 34, cy: 52, scale: 1.32 },
-            seeIq: "شوف اليسار وبالنص: نختار فرشاة بينية قطرها أكبر بشوية من فتحة اللثة حتى تضغط عالسطحين وتدخل التقعرات بضربات قصيرة بينما الخضراء تدخل الفوركيشن والسطح اللساني السفلي",
-            whyIq: "سلايدات 66–69 تشرح قاعدة القطر الأكبر قليلاً ومواضع الـ Single-tufted الثلاثة التي يخطئ بها الطلاب",
-            tipIq: "Diameter slightly larger -> pressure on both proximal surfaces · Single-tufted -> lingual mandibular molars/premolars + furcations"
+            "label": "1. الفرشاة البينية بقطر أكبر قليلاً بضربات ذهاب وإياب قصيرة",
+            "activePart": "oversized_brush",
+            "focus": {
+              "cx": 48,
+              "cy": 50,
+              "scale": 1.2
+            },
+            "seeIq": "شوف القطر: الفرشاة البينية أكبر بشوية من فتحة اللثة حتى تضغط شعيراتها على كلا السطحين الجانبيين وبضربات قصيرة تنظف التقعرات",
+            "whyIq": "سلايد 66 يعلم قاعدة اختيار القطر الأكبر قليلاً وعدم اختيار قياس صغير حيل يمشي بالهواء بدون ملامسة جدران السن",
+            "tipIq": "Slide 66: Select diameter slightly larger than gingival embrasure · Short back-and-forth strokes"
           },
           {
-            label: "2. الأعواد الخشبية المثلثة (Triangular Wooden Tips) من الجهة الشدقية",
-            activePart: "wood",
-            focus: { cx: 82, cy: 54, scale: 1.38 },
-            seeIq: "شوف اليمين: العود الخشبي المثلث يدخل من الجهة الأمامية (Buccal) بالأسنان الأمامية ويتتبع حافة اللثة ويفوت بالجيوب والفوركيشن ويعادل الخيط بالتهاب اللثة",
-            whyIq: "سلايد 70 يحدد إنها أفيد بالأمامية من الجهة الـ buccal وتتتبع الحافة اللثوية من الجهتين facial و lingual",
-            tipIq: "Slide 70: As effective as floss in gingivitis · Triangular tips most useful anteriorly from buccal"
+            "label": "2. الفرشاة أحادية الخصلة (Single-Tufted): الفوركيشن واللساني السفلي",
+            "activePart": "single_tufted",
+            "focus": {
+              "cx": 52,
+              "cy": 56,
+              "scale": 1.2
+            },
+            "seeIq": "باوع بالمرآة على السطح اللساني للأضراس السفلية: الخصلة الوحيدة توصل بسهولة للفوركيشن والانحسارات المعزولة والسطح اللساني الصعب",
+            "whyIq": "سلايد 67 و 68: مواضع الـ Single-tufted الدقيقة مهمة جداً لمرضى الفوركيشن والانحسار المعزول ومناطق صعوبة الوصول اللسانية",
+            "tipIq": "Slide 67 Single-tufted: Furcation areas · Isolated recession · Lingual surfaces of mandibular molars/premolars"
+          },
+          {
+            "label": "3. الأعواد الخشبية المثلثة (Triangular Tips): أمامياً من الجهة الشدقية",
+            "activePart": "wooden_tip",
+            "focus": {
+              "cx": 45,
+              "cy": 54,
+              "scale": 1.2
+            },
+            "seeIq": "شوف العود الخشبي المثلث يدخل من الجهة الأمامية (Buccal) بين القواطع السفلية ويتتبع حافة اللثة بقاعدته المثلثة بلا ما يأذي الحليمة",
+            "whyIq": "سلايد 70: الأعواد الخشبية المثلثة تعادل الخيط في التهاب اللثة وأكثر ما تفيد بالأسنان الأمامية من الجهة الـ buccal وبمفترقات الجذور",
+            "tipIq": "Slide 70: As effective as floss in gingivitis · Triangular tips most useful anteriorly from buccal aspect"
+          },
+          {
+            "label": "4. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p7t2_xray_furcation_1795614770275.jpg",
+            "activePart": "wooden_tip",
+            "focus": {
+              "cx": 52,
+              "cy": 54,
+              "scale": 1.18
+            },
+            "seeIq": "بالأشعة يبين سواد مثلثي واضح بين جذري الرحى السفلية (Furcation defect) وهذا أهم موضع تحتاج بيه الفرشاة البينية وأحادية الخصلة",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر آفة مفترق الجذور السفلية (Furcation Involvement) وفقدان العظم",
+            "tipIq": "Class II/III molar furcation radiolucency -> Textbook clinical indication for single-tufted & oversized ID brush"
           }
         ],
-        parts: [
-          { key: "oversized", en: "Slightly Larger Interdental Brush (Short Strokes)", ar: "فرشاة بينية أكبر قليلاً بضربات قصيرة", posPct: [18, 56], iq: "تُحرّك ذهاباً وإياباً بضربات قصيرة لتضغط الشعيرات على كلا السطحين وتدخل بالتقعرات", clinical: "Slide 66 Technique" },
-          { key: "tufted", en: "Single-Tufted (Furcation & Lingual Mandibular)", ar: "أحادية الخصلة (مفترق الجذور واللساني السفلي)", posPct: [49, 60], iq: "فعالة بمفترق الجذور والانحسار المعزول والسطوح اللسانية للأضراس والضواحك السفلية", clinical: "Slide 67" },
-          { key: "wood", en: "Triangular Wooden Tip (Anterior Buccal)", ar: "العود الخشبي المثلث (أمامياً من الـ Buccal)", posPct: [83, 56], iq: "بفعالية الخيط في التهاب اللثة وتدخل الجيوب والمفترقات وتتبع حافة اللثة", clinical: "Slide 70 Wooden Toothpicks" }
-        ],
+        "parts": [
+          {
+            "key": "oversized_brush",
+            "en": "Slightly Larger Interdental Brush Diameter",
+            "ar": "فرشاة بينية بقطر أكبر قليلاً",
+            "posPct": [
+              48,
+              48
+            ],
+            "iq": "تضغط شعيراتها على كلا السطحين وتنساب داخل التقعرات بحركة ذهاب وإياب قصيرة منتظمة",
+            "clinical": "Ideal for open embrasures (Slide 66)"
+          },
+          {
+            "key": "single_tufted",
+            "en": "Single-Tufted Brush (Lingual & Furcation)",
+            "ar": "أحادية الخصلة (اللساني ومفترق الجذور)",
+            "posPct": [
+              62,
+              54
+            ],
+            "iq": "تصل بدقة لمفترقات الجذور والانحسارات المعزولة والسطوح اللسانية للأضراس والضواحك السفلية",
+            "clinical": "Slide 67 Exact 3 Clinical Sites"
+          },
+          {
+            "key": "wooden_tip",
+            "en": "Triangular Wooden Tip (Anterior Buccal)",
+            "ar": "العود الخشبي المثلث (أمامياً من الـ Buccal)",
+            "posPct": [
+              24,
+              78
+            ],
+            "iq": "بفعالية الخيط في التهاب اللثة وتدخل بينياً متتبعة حافة اللثة بالأسنان الأمامية من الخد",
+            "clinical": "Slide 70 Soft wood / plastic alternative"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawFlowTrack(ctx, w * 0.14, h * 0.56, w * 0.24, h * 0.56, "#10B981", 2.3, t, true);
-            drawFocusHalo(ctx, w * 0.49, h * 0.60, 22, "#FCD34D", t);
-          } else {
-            drawFlowTrack(ctx, w * 0.80, h * 0.64, w * 0.86, h * 0.50, "#F59E0B", 2.3, t, true);
-          }
-        }
+    if(st.scIdx === 0){
+      drawFlowTrack(ctx, w * 0.40, h * 0.48, w * 0.56, h * 0.48, "#5EEAD4", 2.3, t, true);
+    } else if(st.scIdx === 1){
+      drawOrbitPath(ctx, w * 0.62, h * 0.54, 16, 14, "#38BDF8", t, 3.0, false);
+    } else if(st.scIdx === 2){
+      drawFlowTrack(ctx, w * 0.16, h * 0.78, w * 0.32, h * 0.78, "#FBBF24", 2.2, t, true);
+    } else {
+      drawFocusHalo(ctx, w * 0.52, h * 0.57, 24, "#F87171", t);
+      drawShockRings(ctx, w * 0.52, h * 0.57, 26, "#FBBF24", 2, t);
+    }
+  }
       },
-
-      "p8-supragingival-irrigation": {
-        imgSrc: "src/assets/images/supragingival_water_flosser_1795585157742.jpg",
-        duration: 8,
-        scenarios: [
+      "p8-supragingival-irrigation":       {
+        "imgSrc": "src/assets/images/p8t1_f1_irrig_ortho_1795610828037.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. تيار الماء النابض لطرد البكتيريا غير اللاصقة حول التقويم والتركيبات",
-            activePart: "stream",
-            focus: { cx: 48, cy: 52, scale: 1.36 },
-            seeIq: "شوف الخيط المائي يضخ نبضات ماء تغسل البكتيريا غير اللاصقة والفضلات حول براكيت التقويم والتركيبات الثابتة وتقلل الالتهاب وعمق الجيب",
-            whyIq: "سلايدات 71–73: آمن للزرعات والتقويم والسكري والإرواء اليومي بالـ dilute CHX لـ 6 أشهر غلب الماي وغسول الكلورهيكسيدين",
-            tipIq: "Pulsating stream removes non-adherent bacteria/debris · Dilute CHX (6 mo) > water irrigation & CHX rinse"
+            "label": "1. تيار الماء النابض يغسل البكتيريا غير اللاصقة حول التقويم",
+            "activePart": "ortho_flush",
+            "focus": {
+              "cx": 55,
+              "cy": 50,
+              "scale": 1.2
+            },
+            "seeIq": "شوف النبضات المائية تتدفق مباشرة على حاصرات التقويم والسلك وتغسل الفضلات والبكتيريا الحرة غير اللاصقة بفعالية عالية",
+            "whyIq": "سلايد 71–74: الخيط المائي يقلل النزيف 56% أفضل من الفرشاة البينية والبلاك 18% أفضل ويخفض الـ BOP بنسبة 50% خلال 6 أشهر",
+            "tipIq": "vs Interdental brush: +56% bleeding reduction & +18% plaque removal · 50% BOP reduction at 6 mo"
           },
           {
-            label: "2. الأرقام القوية: 56% تقليل نزيف و 18% بلاك و 50% خفض BOP خلال 6 أشهر",
-            activePart: "unit",
-            focus: { cx: 64, cy: 44, scale: 1.25 },
-            seeIq: "مقارنة بالـ Interdental brushes: الخيط المائي أفضل 56% بتقليل النزيف و 18% بإزالة البلاك وخلال 6 أشهر قلل الـ BOP بنسبة 50% متفوقاً على غسول 0.12% CHX",
-            whyIq: "سلايدات 74 و 75 تجيب هاي الأرقام الثلاثة بكثرة في أسئلة الاختيارات بالامتحان",
-            tipIq: "vs Interdental brush: +56% bleeding, +18% plaque · Reduces BOP 50% (6 mo) > 0.12% CHX mouthrinse"
+            "label": "2. أمان الإرواء اليومي حول التيجان والزرعات والسكري",
+            "activePart": "nozzle_tip",
+            "focus": {
+              "cx": 56,
+              "cy": 44,
+              "scale": 1.18
+            },
+            "seeIq": "حول التاج التجميلي بالأمامية تبقى اللثة وردية ومستقرة تماماً بدون نزيف لأن الإرواء النابض آمن ومثبت للزرعات والسكري والمتابعة",
+            "whyIq": "سلايد 73 و 75: الإرواء اليومي بالـ Dilute CHX لمدة 6 أشهر غلب الإرواء بالماي وغسول CHX وخفض النزف متفوقاً على مضمضة 0.12% CHX",
+            "tipIq": "Safe for implants / diabetes / ortho / maintenance · Dilute CHX (6 mo) > water & CHX rinse"
           }
         ],
-        parts: [
-          { key: "unit", en: "Pulsating Oral Irrigator Unit", ar: "وحدة الإرواء الفموي النابض", posPct: [86, 26], iq: "تضخ نبضات ماء فعالة ومجربة لدى مرضى الزرعات والتقويم والسكري والمتابعة", clinical: "Slides 71 & 75" },
-          { key: "stream", en: "Non-Adherent Bacteria & Debris Flush", ar: "غسل البكتيريا غير اللاصقة حول التقويم", posPct: [44, 56], iq: "أكثر فعالية من الفرشاة والغسول في إزالة الفضلات والبكتيريا الحرة حول التقويم والتركيبات", clinical: "56% bleeding & 18% plaque (Slide 74)" }
-        ],
+        "parts": [
+          {
+            "key": "ortho_flush",
+            "en": "Pulsating Stream Clearing Non-Adherent Debris",
+            "ar": "غسل البكتيريا الحرة والفضلات حول التقويم",
+            "posPct": [
+              56,
+              56
+            ],
+            "iq": "تضخ النبضات الماء لتشتيت البكتيريا غير الملتصقة والفضلات حول الأسلاك والحاصرات",
+            "clinical": "56% better bleeding reduction vs ID brush"
+          },
+          {
+            "key": "nozzle_tip",
+            "en": "Supragingival Pulsating Irrigator Tip",
+            "ar": "رأس الإرواء الفموي النابض",
+            "posPct": [
+              38,
+              38
+            ],
+            "iq": "يروي حافة اللثة ويقلل الالتهاب وعمق الجيب ويتفوق عند إضافة الكلورهيكسيدين المخفف",
+            "clinical": "Slides 72–73 Dilute CHX study (6 months)"
+          },
+          {
+            "key": "crown_margin",
+            "en": "Restored Crown Collar & Implant Safety",
+            "ar": "سلامة اللثة حول التيجان والزرعات",
+            "posPct": [
+              62,
+              68
+            ],
+            "iq": "مثبت علمياً لمرضى التيجان والزرعات والسكري ويخفض الـ BOP بمقدار 50% خلال 6 أشهر",
+            "clinical": "Slides 71 & 75 > 0.12% CHX mouthrinse"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          drawSprayStream(ctx, w * 0.62, h * 0.60, w * 0.42, h * 0.56, "#7DD3FC", 16, t, 2.5);
-          if(st.scIdx === 1){
-            drawFocusHalo(ctx, w * 0.42, h * 0.56, 28, "#10B981", t);
-          }
-        }
+    drawSprayStream(ctx, w * 0.38, h * 0.38, w * 0.56, h * 0.56, "#7DD3FC", 16, t, 2.5);
+    if(st.scIdx === 1){
+      drawFocusHalo(ctx, w * 0.62, h * 0.68, 22, "#5EEAD4", t);
+    }
+  }
       },
-
-      "p8-jet-rubber-tip": {
-        imgSrc: "src/assets/images/water_flosser_jet_rubber_tip_1795585026692.jpg",
-        duration: 8,
-        scenarios: [
+      "p8-jet-rubber-tip":       {
+        "imgSrc": "src/assets/images/p8t2_f1_jet_90deg_1795610962507.jpg",
+        "duration": 8,
+        "scenarios": [
           {
-            label: "1. فوهة الـ 90 درجة على الحليمة (3–5 ثواني) وتدريج الضغط Low → Medium",
-            activePart: "jet90",
-            focus: { cx: 30, cy: 48, scale: 1.36 },
-            seeIq: "شوف اليسار: الفوهة البلاستيكية المنحنية 90 درجة تتوجه 90 درجة عبر الحليمة وتثبت 3 إلى 5 ثواني ونتتبع حافة اللثة من الخد واللسان وبضغط يبدأ Low للـ Medium",
-            whyIq: "سلايد 78 و 79 (النقاط 1–4): راحة المريض هي دليل الضغط وتوجد رؤوس معدلة بخصلة شعيرات أو ثلاث خيوط",
-            tipIq: "90° bend nozzle · Aim 90° across papilla 3 to 5 sec · Buccal & Lingual · Start Low -> Medium by comfort"
+            "label": "1. فوهة الـ 90 درجة: التوجيه العمودي عبر الحليمة وتثبيت 3–5 ثواني",
+            "activePart": "jet_90",
+            "focus": {
+              "cx": 48,
+              "cy": 48,
+              "scale": 1.2
+            },
+            "seeIq": "شوف الزاوية: الفوهة البلاستيكية تتوجه 90 درجة عمودية عبر الحليمة وتثبت 3 إلى 5 ثواني من الخد واللسان مع بداية الضغط بـ Low للـ Medium",
+            "whyIq": "سلايد 78 و 79 (النقاط 1–4): كل المرضى يبدأون بضغط منخفض وتتحكم راحة المريض بزيادة الضغط حتى يتحسن النسيج",
+            "tipIq": "Aim 90° across papilla 3–5 sec · Trace gingival margin buccally & lingually · Start LOW -> MEDIUM by comfort"
           },
           {
-            label: "2. الرأس المطاطي Soft Rubber Tip (ضغط واطي ثابت وعمق 70% من جيب 6 ملم)",
-            activePart: "rubber",
-            focus: { cx: 74, cy: 50, scale: 1.38 },
-            seeIq: "شوف اليمين: الرأس المطاطي الطري يدخل شوية جوا اللثة بالجيب العميق أو الفوركيشن ليضخ الدواء بضغط واطي دائماً (مهما كان عيار الجهاز) ويصل لـ 70% من جيب 6 ملم",
-            whyIq: "سلايد 79 (النقاط 5–6): نقطة امتحانية مهمة إن الضغط يبقى واطياً تلقائياً بالـ soft rubber tip لحماية الجيب العميق",
-            tipIq: "Soft Rubber Tip: Low-pressure regardless of unit setting · Slightly subgingival · Up to 70% of 6-mm pocket"
+            "label": "2. الرأس المطاطي الطري (Soft Rubber Tip): ضغط واطي ثابت للجيوب",
+            "activePart": "papilla_target",
+            "focus": {
+              "cx": 48,
+              "cy": 54,
+              "scale": 1.22
+            },
+            "seeIq": "شوف الرأس المطاطي الطري يوضع شوية جوا حافة اللثة (Slightly subgingivally) ليضخ الدواء داخل الجيب العميق بضغط واطي دائماً",
+            "whyIq": "سلايد 79 (النقطتان 5–6): يعمل بضغط منخفض تلقائياً بغض النظر عن عيار الجهاز ليصل حتى 70% من عمق جيب 6 ملم بأمان",
+            "tipIq": "Soft Rubber Tip: Low-pressure regardless of unit setting · Slightly subgingival · Up to 70% of 6-mm pocket"
+          },
+          {
+            "label": "3. التقييم الشعاعي السريري المرافق",
+            "imgSrc": "src/assets/images/p8t2_xray_pocket_implant_1795614769600.jpg",
+            "activePart": "rubber_tip",
+            "focus": {
+              "cx": 54,
+              "cy": 50,
+              "scale": 1.18
+            },
+            "seeIq": "الأشعة توضح الحاجة الحقيقية للرأس المطاطي والمائي: جيب عمودي عميق قرابة 6 ملم نازل بجانب جذر الرحى وزرعة سنية مجاورة تتطلب صيانة لطيفة",
+            "whyIq": "صورة شعاعية تعليمية مولّدة تُظهر جيباً عمودياً عميقاً ~6 ملم بجوار رحى وزرعة سنية",
+            "tipIq": "Deep 6-mm vertical infrabony pockets & implant maintenance -> Soft rubber tip reaches 70% depth safely at low pressure"
           }
         ],
-        parts: [
-          { key: "jet90", en: "90° Plastic Jet Nozzle (3–5 sec Hold)", ar: "رأس الـ 90 درجة (تثبيت 3–5 ثواني)", posPct: [38, 36], iq: "يوجه بزاوية 90 درجة عبر الحليمة 3 إلى 5 ثواني من الخد واللسان مع البدء بضغط واطي إلى وسط", clinical: "Slides 77–79 (Fig 50.15)" },
-          { key: "rubber", en: "Soft Rubber Tip (Low Pressure · 70% of 6-mm)", ar: "الرأس المطاطي الطري (70% من جيب 6 ملم)", posPct: [78, 33], iq: "يضخ الدواء بضغط واطي دائماً بغض النظر عن عيار الجهاز ليصل لـ 70% من عمق جيب 6 ملم", clinical: "Slide 79 (Points 5–6)" }
-        ],
+        "parts": [
+          {
+            "key": "jet_90",
+            "en": "90° Plastic Jet Nozzle & Pressure Progression",
+            "ar": "فوهة الـ 90 درجة وتدريج الضغط",
+            "posPct": [
+              65,
+              48
+            ],
+            "iq": "تُوجه بزاوية 90 درجة وتبدأ بالضغط الواطئ (Low) ثم تزيد للـ Medium وفق راحة المريض فقط",
+            "clinical": "Modified tips also include brush tuft / 3-filament"
+          },
+          {
+            "key": "papilla_target",
+            "en": "Interdental Papilla 3–5 sec Trace Zone",
+            "ar": "الحليمة البينية (تثبيت 3 إلى 5 ثواني)",
+            "posPct": [
+              48,
+              49
+            ],
+            "iq": "تتتبع الفوهة حافة اللثة من الخد واللسان وتتوقف 3–5 ثواني على كل حليمة لطرد البكتيريا",
+            "clinical": "Slide 79 Points 1–3"
+          },
+          {
+            "key": "rubber_tip",
+            "en": "Soft Rubber Tip (Low-Pressure · 70% of 6-mm)",
+            "ar": "الرأس المطاطي الطري للجيوب العميقة (70%)",
+            "posPct": [
+              52,
+              54
+            ],
+            "iq": "يوضع قليلاً تحت اللثة ويوصل الدواء للجيوب العميقة والفوركيشن بضغط واطئ بغض النظر عن عيار الجهاز",
+            "clinical": "Slide 79 Exam Classic: 70% of 6-mm pocket"
+          }
+        ]
+      ,
         drawOverlay: function(ctx, w, h, t, st){
-          if(st.scIdx === 0){
-            drawSprayStream(ctx, w * 0.37, h * 0.36, w * 0.28, h * 0.43, "#7DD3FC", 16, t, 2.4);
-            drawFocusHalo(ctx, w * 0.28, h * 0.43, 22, "#38BDF8", t);
-          } else {
-            drawFlowTrack(ctx, w * 0.77, h * 0.35, w * 0.74, h * 0.56, "#2DD4BF", 2.3, t, false);
-            drawFocusHalo(ctx, w * 0.74, h * 0.56, 24, "#FCD34D", t);
-          }
-        }
+    if(st.scIdx === 0){
+      drawSprayStream(ctx, w * 0.65, h * 0.48, w * 0.48, h * 0.49, "#7DD3FC", 14, t, 2.4);
+      drawFocusHalo(ctx, w * 0.48, h * 0.49, 20, "#FDE68A", t);
+    } else if(st.scIdx === 1){
+      drawFlowTrack(ctx, w * 0.52, h * 0.46, w * 0.52, h * 0.62, "#5EEAD4", 2.3, t, true);
+      drawShockRings(ctx, w * 0.52, h * 0.58, 20, "#38BDF8", 2, t);
+    } else {
+      drawFlowTrack(ctx, w * 0.50, h * 0.36, w * 0.50, h * 0.64, "#5EEAD4", 2.3, t, true);
+      drawFocusHalo(ctx, w * 0.36, h * 0.52, 22, "#38BDF8", t);
+    }
+  }
       }
     });
+
     function fmtSec(sec){
       var s = Math.max(0, Math.floor(sec || 0));
       var m = Math.floor(s / 60), r = s % 60;
@@ -3871,7 +4671,7 @@
           '</div>' +
           '<svg class="sim-3d-leaders" data-3d-leaders aria-hidden="true"></svg>' +
           '<div class="sim-3d-pins" data-3d-pins></div>' +
-          '<div class="sim-3d-hud-rtl">اضغط أي تسمية للشرح · اسحب أو كبّر للفحص الدقيق</div>' +
+          '<div class="sim-3d-hud-rtl">اضغط أي نقطة مرقمة لمعرفة اسمها وشرحها · اسحب أو كبّر</div>' +
           '<div class="sim-3d-hud-ltr" data-hud-ltr>HD Clinical Studio · '+esc(simId)+'</div>' +
           '<div class="sim-video-bar">' +
             '<button type="button" class="sim-video-playbtn" data-vid-play title="تشغيل / إيقاف">&#10074;&#10074;</button>' +
@@ -3887,7 +4687,7 @@
           '<button type="button" class="sim-btn" data-ms-act="slow">حركة بطيئة 0.5x</button>' +
           '<button type="button" class="sim-btn" data-ms-act="zoomin">تكبير +</button>' +
           '<button type="button" class="sim-btn" data-ms-act="zoomout">تصغير -</button>' +
-          '<button type="button" class="sim-btn active" data-ms-act="labels">إظهار التسميات</button>' +
+          '<button type="button" class="sim-btn active" data-ms-act="labels">إخفاء النقاط</button>' +
           '<button type="button" class="sim-btn" data-ms-act="reset">إعادة ضبط</button>' +
         '</div>' +
         '<div class="sim-iq-guide" data-iq-guide>'+buildGuideHtml(firstSc)+'</div>' +
@@ -3895,6 +4695,8 @@
 
       var viewportEl = stage.querySelector(".sim-3d-viewport");
       var mediaStageEl = stage.querySelector("[data-media-stage]");
+      var mediaImgEl = stage.querySelector(".sim-media-img");
+      var hudLtrEl = stage.querySelector("[data-hud-ltr]");
       var canvasEl = stage.querySelector("[data-motion-canvas]");
       var leadersEl = stage.querySelector("[data-3d-leaders]");
       var pinsEl = stage.querySelector("[data-3d-pins]");
@@ -3912,30 +4714,7 @@
       var alive = true, rafId = 0, lastTs = 0, isOnScreen = true, forceRedraw = true;
       var curTx = 0, curTy = 0;
 
-      var SVG_NS = "http://www.w3.org/2000/svg";
-      var uid = simId.replace(/[^a-z0-9]/gi, "") + "_" + Math.floor(Math.random() * 100000);
-      var arrC = "arrC_" + uid, arrG = "arrG_" + uid;
-      if(leadersEl){
-        var defs = document.createElementNS(SVG_NS, "defs");
-        function mkArr(id, fill){
-          var m = document.createElementNS(SVG_NS, "marker");
-          m.setAttribute("id", id); m.setAttribute("viewBox", "0 0 12 12");
-          m.setAttribute("refX", "9.6"); m.setAttribute("refY", "6");
-          m.setAttribute("markerWidth", "5.6"); m.setAttribute("markerHeight", "5.6"); m.setAttribute("orient", "auto");
-          var sh = document.createElementNS(SVG_NS, "path");
-          sh.setAttribute("d", "M 1.0 1.8 L 11.2 6 L 1.0 10.2 L 3.8 6 Z");
-          sh.setAttribute("fill", "rgba(4,10,22,0.68)");
-          var p = document.createElementNS(SVG_NS, "path");
-          p.setAttribute("d", "M 1.8 2.6 L 10.2 6 L 1.8 9.4 L 4.3 6 Z");
-          p.setAttribute("fill", fill);
-          m.appendChild(sh);
-          m.appendChild(p);
-          return m;
-        }
-        defs.appendChild(mkArr(arrC, "rgba(186,230,253,0.92)"));
-        defs.appendChild(mkArr(arrG, "#FCD34D"));
-        leadersEl.appendChild(defs);
-      }
+      if(leadersEl){ leadersEl.style.display = "none"; }
 
       var pinNodes = [];
       parts.forEach(function(p, idx){
@@ -3944,61 +4723,20 @@
         btn.type = "button";
         btn.className = "sim-3d-pin" + (isAct ? " active" : "");
         btn.setAttribute("data-pin-key", p.key);
-        btn.innerHTML = '<span class="sim-3d-pin-idx">'+(idx+1)+'</span><span>'+esc(p.ar)+'</span>';
+        btn.setAttribute("aria-label", (idx+1) + ". " + (p.ar || p.en || ""));
+        btn.setAttribute("title", (idx+1) + ". " + (p.ar || p.en || ""));
+        btn.textContent = String(idx + 1);
         btn.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
         btn.addEventListener("click", function(e){ e.stopPropagation(); selectPart(p.key, true); });
         pinsEl.appendChild(btn);
 
-        var shadowLine = document.createElementNS(SVG_NS, "path");
-        shadowLine.setAttribute("fill", "none");
-        shadowLine.setAttribute("stroke", "rgba(4,10,22,0.52)");
-        shadowLine.setAttribute("stroke-width", isAct ? "3.1" : "2.3");
-        shadowLine.setAttribute("stroke-linecap", "round");
-        leadersEl.appendChild(shadowLine);
-
-        var line = document.createElementNS(SVG_NS, "path");
-        line.setAttribute("fill", "none");
-        line.setAttribute("stroke", isAct ? "#FCD34D" : "rgba(186,230,253,0.78)");
-        line.setAttribute("stroke-width", isAct ? "1.75" : "1.25");
-        line.setAttribute("stroke-linecap", "round");
-        line.setAttribute("marker-end", "url(#" + (isAct ? arrG : arrC) + ")");
-        leadersEl.appendChild(line);
-
-        var originPip = document.createElementNS(SVG_NS, "circle");
-        originPip.setAttribute("r", isAct ? "2.4" : "1.9");
-        originPip.setAttribute("fill", isAct ? "#FCD34D" : "rgba(186,230,253,0.88)");
-        originPip.setAttribute("stroke", "#040A16");
-        originPip.setAttribute("stroke-width", "1.0");
-        leadersEl.appendChild(originPip);
-
-        var halo = document.createElementNS(SVG_NS, "circle");
-        halo.setAttribute("r", isAct ? "9.5" : "7.0");
-        halo.setAttribute("fill", "none");
-        halo.setAttribute("stroke", isAct ? "rgba(252,211,77,0.32)" : "rgba(186,230,253,0.18)");
-        halo.setAttribute("stroke-width", "0.9");
-        leadersEl.appendChild(halo);
-
-        var ring = document.createElementNS(SVG_NS, "circle");
-        ring.setAttribute("r", isAct ? "6.8" : "5.2");
-        ring.setAttribute("fill", "none");
-        ring.setAttribute("stroke", isAct ? "rgba(252,211,77,0.88)" : "rgba(186,230,253,0.68)");
-        ring.setAttribute("stroke-width", isAct ? "1.35" : "1.0");
-        leadersEl.appendChild(ring);
-
-        var dot = document.createElementNS(SVG_NS, "circle");
-        dot.setAttribute("r", isAct ? "3.4" : "2.7");
-        dot.setAttribute("fill", isAct ? "#FDE68A" : "#7DD3FC");
-        dot.setAttribute("stroke", "#040A16");
-        dot.setAttribute("stroke-width", "1.2");
-        leadersEl.appendChild(dot);
-
-        pinNodes.push({ part: p, btn: btn, shadowLine: shadowLine, line: line, originPip: originPip, halo: halo, dot: dot, ring: ring, w: 120, h: 24 });
+        pinNodes.push({ part: p, btn: btn, w: 28, h: 28 });
       });
 
       function measurePins(){
         pinNodes.forEach(function(it){
-          it.w = Math.max(82, it.btn.offsetWidth || 120);
-          it.h = Math.max(22, it.btn.offsetHeight || 24);
+          it.w = Math.max(24, it.btn.offsetWidth || 28);
+          it.h = Math.max(24, it.btn.offsetHeight || 28);
         });
       }
 
@@ -4021,113 +4759,47 @@
 
       function layoutPinsAndLeaders(){
         if(!st.showLabels){
-          pinsEl.style.display = "none"; leadersEl.style.display = "none"; return;
+          pinsEl.style.display = "none"; return;
         }
-        pinsEl.style.display = ""; leadersEl.style.display = "";
+        pinsEl.style.display = "";
 
-        var placed = [], dots = [], topGuard = 44, botGuard = 54, padX = 10;
-        pinNodes.forEach(function(it, idx){
+        var placed = [], topGuard = 42, botGuard = 52, padX = 14;
+        pinNodes.forEach(function(it){
           var pct = it.part.posPct || [50, 50];
           var ax = (pct[0] / 100) * vw * st.curScale + curTx;
           var ay = (pct[1] / 100) * vh * st.curScale + curTy;
           var visible = (ax >= -16 && ax <= vw + 16 && ay >= -16 && ay <= vh + 16);
           it.btn.style.opacity = visible ? "1" : "0.22";
-          it.shadowLine.setAttribute("opacity", visible ? "1" : "0.18");
-          it.line.setAttribute("opacity", visible ? "1" : "0.18");
-          it.originPip.setAttribute("opacity", visible ? "1" : "0.22");
-          it.halo.setAttribute("opacity", visible ? "1" : "0.14");
-          it.dot.setAttribute("opacity", visible ? "1" : "0.22");
-          it.ring.setAttribute("opacity", visible ? "1" : "0.18");
-          dots.push({ ax: ax, ay: ay });
-
-          var onLeft = ax < vw * 0.52;
-          var bx = onLeft ? padX : Math.max(padX, vw - it.w - padX);
-          var by = Math.max(topGuard, Math.min(vh - it.h - botGuard, ay - it.h * 0.5 + (idx % 2 === 0 ? -12 : 12)));
-          placed.push({ item: it, ax: ax, ay: ay, x: bx, y: by, w: it.w, h: it.h, onLeft: onLeft });
+          var cx = Math.max(padX + it.w * 0.5, Math.min(vw - padX - it.w * 0.5, ax));
+          var cy = Math.max(topGuard + it.h * 0.5, Math.min(vh - botGuard - it.h * 0.5, ay));
+          placed.push({ item: it, cx: cx, cy: cy });
         });
 
-        function pushClearOfDots(p){
-          for(var d = 0; d < dots.length; d++){
-            var dt = dots[d];
-            var cxB = Math.max(p.x, Math.min(dt.ax, p.x + p.w));
-            var cyB = Math.max(p.y, Math.min(dt.ay, p.y + p.h));
-            var dist = Math.hypot(dt.ax - cxB, dt.ay - cyB);
-            if(dist < 32){
-              var topOpt = dt.ay - 32 - p.h;
-              var botOpt = dt.ay + 32;
-              var canTop = topOpt >= topGuard;
-              var canBot = botOpt + p.h <= vh - botGuard;
-              var goTop = (p.y + p.h * 0.5) <= dt.ay;
-              if(goTop && !canTop && canBot) goTop = false;
-              else if(!goTop && !canBot && canTop) goTop = true;
-              else if(!canTop && !canBot) goTop = (dt.ay - topGuard) >= (vh - botGuard - dt.ay);
-              p.y = goTop ? Math.max(topGuard, topOpt) : Math.min(vh - p.h - botGuard, botOpt);
+        for(var pass = 0; pass < 4; pass++){
+          for(var i = 0; i < placed.length; i++){
+            for(var j = i + 1; j < placed.length; j++){
+              var a = placed[i], b = placed[j];
+              var dx = b.cx - a.cx, dy = b.cy - a.cy;
+              var dist = Math.hypot(dx, dy) || 0.01;
+              var minDist = Math.max(a.item.w, b.item.w) + 6;
+              if(dist < minDist){
+                var push = (minDist - dist) * 0.5;
+                var ux = dx / dist, uy = dy / dist;
+                a.cx -= ux * push; a.cy -= uy * push;
+                b.cx += ux * push; b.cy += uy * push;
+              }
             }
           }
-        }
-        for(var pass = 0; pass < 8; pass++){
-          placed.forEach(pushClearOfDots);
-          [true, false].forEach(function(sideLeft){
-            var rail = placed.filter(function(p){ return p.onLeft === sideLeft; });
-            rail.sort(function(p1, p2){ return p1.y - p2.y; });
-            for(var r = 1; r < rail.length; r++){
-              if(rail[r].y < rail[r - 1].y + rail[r - 1].h + 6){
-                var candDown = rail[r - 1].y + rail[r - 1].h + 6;
-                var hitsDotDown = dots.some(function(dt){
-                  var cx = Math.max(rail[r].x, Math.min(dt.ax, rail[r].x + rail[r].w));
-                  var cy = Math.max(candDown, Math.min(dt.ay, candDown + rail[r].h));
-                  return Math.hypot(dt.ax - cx, dt.ay - cy) < 32;
-                });
-                if(!hitsDotDown && candDown + rail[r].h <= vh - botGuard){
-                  rail[r].y = candDown;
-                } else {
-                  for(var k = r - 1; k >= 0; k--){
-                    rail[k].y = Math.max(topGuard, rail[k + 1].y - rail[k].h - 6);
-                  }
-                }
-              }
-            }
-            if(rail.length){
-              var last = rail[rail.length - 1];
-              if(last.y > vh - last.h - botGuard) last.y = vh - last.h - botGuard;
-              for(var r = rail.length - 2; r >= 0; r--){
-                if(rail[r].y + rail[r].h + 6 > rail[r + 1].y){
-                  rail[r].y = Math.max(topGuard, rail[r + 1].y - rail[r].h - 6);
-                }
-              }
-            }
+          placed.forEach(function(pl){
+            pl.cx = Math.max(padX + pl.item.w * 0.5, Math.min(vw - padX - pl.item.w * 0.5, pl.cx));
+            pl.cy = Math.max(topGuard + pl.item.h * 0.5, Math.min(vh - botGuard - pl.item.h * 0.5, pl.cy));
           });
         }
 
         placed.forEach(function(pl){
-          pl.item.btn.style.transform = "translate3d(" + pl.x.toFixed(1) + "px," + pl.y.toFixed(1) + "px,0)";
-          var sx = pl.ax > (pl.x + pl.w * 0.5) ? (pl.x + pl.w + 1) : (pl.x - 1);
-          var verticalExit = false;
-          if(pl.ax >= pl.x && pl.ax <= pl.x + pl.w){
-            sx = pl.x + pl.w * 0.5;
-            verticalExit = true;
-          }
-          var sy = verticalExit
-            ? (pl.ay > (pl.y + pl.h * 0.5) ? (pl.y + pl.h + 1) : (pl.y - 1))
-            : Math.max(pl.y + 4, Math.min(pl.y + pl.h - 4, pl.y + pl.h * 0.5));
-          var ldx = pl.ax - sx, ldy = pl.ay - sy, ldist = Math.hypot(ldx, ldy) || 1;
-          var stop = Math.min(10, ldist * 0.28);
-          var ux = ldx / ldist, uy = ldy / ldist;
-          var ex = pl.ax - ux * stop;
-          var ey = pl.ay - uy * stop;
-          var c1x = verticalExit ? sx : (sx + (ex >= sx ? 1 : -1) * Math.min(44, Math.max(16, Math.abs(ex - sx) * 0.42)));
-          var c1y = verticalExit ? (sy + (ey >= sy ? 1 : -1) * Math.min(32, Math.max(12, Math.abs(ey - sy) * 0.42))) : sy;
-          var approach = Math.min(34, Math.max(10, ldist * 0.34));
-          var c2x = ex - ux * approach;
-          var c2y = ey - uy * approach;
-          var pathD = "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
-            " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) + ", " + ex.toFixed(1) + " " + ey.toFixed(1);
-          pl.item.shadowLine.setAttribute("d", pathD);
-          pl.item.line.setAttribute("d", pathD);
-          pl.item.originPip.setAttribute("cx", sx.toFixed(1)); pl.item.originPip.setAttribute("cy", sy.toFixed(1));
-          pl.item.halo.setAttribute("cx", pl.ax.toFixed(1)); pl.item.halo.setAttribute("cy", pl.ay.toFixed(1));
-          pl.item.dot.setAttribute("cx", pl.ax.toFixed(1)); pl.item.dot.setAttribute("cy", pl.ay.toFixed(1));
-          pl.item.ring.setAttribute("cx", pl.ax.toFixed(1)); pl.item.ring.setAttribute("cy", pl.ay.toFixed(1));
+          var left = pl.cx - pl.item.w * 0.5;
+          var top = pl.cy - pl.item.h * 0.5;
+          pl.item.btn.style.transform = "translate3d(" + left.toFixed(1) + "px," + top.toFixed(1) + "px,0)";
         });
       }
 
@@ -4137,7 +4809,11 @@
         var sB = stage.querySelector('[data-ms-act="slow"]'); if(sB) sB.classList.toggle("active", st.speed < 0.9);
         vidSpeedBtn.textContent = st.speed < 0.9 ? "0.5x" : "1.0x";
         vidSpeedBtn.classList.toggle("slow", st.speed < 0.9);
-        var lB = stage.querySelector('[data-ms-act="labels"]'); if(lB) lB.classList.toggle("active", st.showLabels);
+        var lB = stage.querySelector('[data-ms-act="labels"]');
+        if(lB){
+          lB.classList.toggle("active", st.showLabels);
+          lB.textContent = st.showLabels ? "إخفاء النقاط" : "إظهار النقاط";
+        }
       }
 
       function selectPart(key, zoomToPart){
@@ -4147,21 +4823,7 @@
           c.classList.toggle("selected", c.getAttribute("data-part-key") === key);
         });
         pinNodes.forEach(function(pn){
-          var isAct = pn.part.key === key;
-          pn.btn.classList.toggle("active", isAct);
-          pn.originPip.setAttribute("r", isAct ? "2.4" : "1.9");
-          pn.originPip.setAttribute("fill", isAct ? "#FCD34D" : "rgba(186,230,253,0.88)");
-          pn.halo.setAttribute("r", isAct ? "9.5" : "7.0");
-          pn.halo.setAttribute("stroke", isAct ? "rgba(252,211,77,0.32)" : "rgba(186,230,253,0.18)");
-          pn.dot.setAttribute("fill", isAct ? "#FDE68A" : "#7DD3FC");
-          pn.dot.setAttribute("r", isAct ? "3.4" : "2.7");
-          pn.ring.setAttribute("stroke", isAct ? "rgba(252,211,77,0.88)" : "rgba(186,230,253,0.68)");
-          pn.ring.setAttribute("r", isAct ? "6.8" : "5.2");
-          pn.ring.setAttribute("stroke-width", isAct ? "1.35" : "1.0");
-          pn.shadowLine.setAttribute("stroke-width", isAct ? "3.1" : "2.3");
-          pn.line.setAttribute("stroke", isAct ? "#FCD34D" : "rgba(186,230,253,0.78)");
-          pn.line.setAttribute("stroke-width", isAct ? "1.75" : "1.25");
-          pn.line.setAttribute("marker-end", "url(#" + (isAct ? arrG : arrC) + ")");
+          pn.btn.classList.toggle("active", pn.part.key === key);
         });
         if(cardEl && found) cardEl.innerHTML = renderInspectorCard(found);
         if(zoomToPart && found && found.posPct){
@@ -4171,6 +4833,14 @@
         forceRedraw = true; ensureLoop();
       }
 
+      scenarios.forEach(function(sc){
+        if(sc.imgSrc && sc.imgSrc !== spec.imgSrc && typeof Image !== "undefined"){
+          var pre = new Image();
+          pre.referrerPolicy = "no-referrer";
+          pre.src = sc.imgSrc;
+        }
+      });
+
       function applyScenario(idx){
         if(idx < 0 || idx >= scenarios.length) return;
         st.scIdx = idx;
@@ -4178,6 +4848,13 @@
         stage.querySelectorAll("[data-sc-idx]").forEach(function(b){
           b.classList.toggle("active", Number(b.getAttribute("data-sc-idx")) === idx);
         });
+        var nextSrc = sc.imgSrc || spec.imgSrc;
+        if(mediaImgEl && nextSrc && mediaImgEl.getAttribute("src") !== nextSrc){
+          mediaImgEl.setAttribute("src", nextSrc);
+        }
+        if(hudLtrEl){
+          hudLtrEl.textContent = (sc.imgSrc ? "Radiographic Evaluation · " : "HD Clinical Studio · ") + simId;
+        }
         if(guideEl) guideEl.innerHTML = buildGuideHtml(sc);
         var f = sc.focus || { cx: 50, cy: 50, scale: 1 };
         st.targetCx = f.cx || 50; st.targetCy = f.cy || 50; st.targetScale = f.scale || 1;
